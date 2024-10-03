@@ -1,14 +1,18 @@
 package api.steps;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static api.templates.AccountTemplates.getBasicUser;
+import static api.templates.AccountTemplates.getGenerateToken;
+import static api.templates.BookTemplates.formAddBook;
+import static api.templates.BookTemplates.formChangeBook;
+import static api.templates.BookTemplates.formIsbn;
+import static helpers.config.Endpoints.BOOK_STOREBOOKS_ENDPOINT;
+import static helpers.config.Endpoints.BOOK_STOREBOOK_ENDPOINT;
+import static org.hamcrest.Matchers.containsString;
 
-import helpers.config.Endpoints;
 import helpers.models.AccountGenerateTokenModel;
 import helpers.models.AccountNewUserRequestModel;
 import helpers.models.BookAddPostRequestModel;
-import helpers.models.BookAddPostResponceModel;
 import helpers.models.BookDeleteRequestModel;
-import helpers.models.BookGetResponceModel;
 import helpers.models.IsbnModel;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
@@ -18,106 +22,167 @@ import java.util.Map;
 
 public class ApiBookSteps {
 
-  Endpoints endpoints = new Endpoints();
+  private Response response;
+  private AccountNewUserRequestModel user;
+  private AccountGenerateTokenModel token;
+  private String isbn;
+  private String userId;
+  private BookAddPostRequestModel addBook;
+  private BookDeleteRequestModel book;
+  private Map<String, ?> bookMap;
+  private List<IsbnModel> isbnArray;
   ApiUserSteps apiUser = new ApiUserSteps();
 
   private List<IsbnModel> getISBN() {
-    IsbnModel isbn = new IsbnModel();
-    isbn.setIsbn("9781593275846");
+    bookMap = getBooks("Git Pocket Guide");
+    IsbnModel isbn = formIsbn(bookMap);
     List<IsbnModel> isbnArray = new ArrayList<>();
     isbnArray.add(0, isbn);
     return isbnArray;
   }
 
-  public String successfulPostBooks(AccountNewUserRequestModel user) {
-    AccountGenerateTokenModel token = apiUser.getToken(user);
-    String userId = apiUser.getLogin(user);
-    List<IsbnModel> isbnArray = getISBN();
-    BookAddPostRequestModel addBook = new BookAddPostRequestModel();
-    addBook.setUserId(userId);
-    addBook.setCollectionOfIsbns(isbnArray);
-    Response responce = new RestWrapper()
-        .post(endpoints.bookStoreBooksEndpoint, addBook, token.getToken())
-        .shouldHaveStatusCode(201)
+  private Map<String, ?> getBooks(String title) {
+    response = new RestWrapper(BOOK_STOREBOOKS_ENDPOINT)
+        .get()
         .shouldGiveResponce();
-    assertEquals(isbnArray, responce.as(BookAddPostResponceModel.class).getBooks());
-    return isbnArray.get(0).getIsbn().toString();
+    return response.path("books.find { it.title == '" + title + "' }");
   }
 
-  @Step("Добавление книги пользователю")
-  public void successfulPostBooks() {
-    AccountNewUserRequestModel user = apiUser.setNewUser();
-    AccountGenerateTokenModel token = apiUser.getToken(user);
-    String userId = apiUser.getLogin(user);
-    List<IsbnModel> isbnArray = getISBN();
-    BookAddPostRequestModel addBook = new BookAddPostRequestModel();
-    addBook.setUserId(userId);
-    addBook.setCollectionOfIsbns(isbnArray);
-    Response responce = new RestWrapper()
-        .post(endpoints.bookStoreBooksEndpoint, addBook, token.getToken())
-        .shouldHaveStatusCode(201)
+  public AccountNewUserRequestModel settingUser() {
+    AccountNewUserRequestModel user = getBasicUser();
+    token = getGenerateToken(user);
+    if (token.getToken() == null) {
+      apiUser.newUser(user);
+    }
+    deleteBooks(user);
+    return user;
+  }
+
+  public String postBooks(AccountNewUserRequestModel user) {
+    token = getGenerateToken(user);
+    userId = apiUser.getLogin(user);
+    isbnArray = getISBN();
+    addBook = formAddBook(userId, isbnArray);
+    new RestWrapper(BOOK_STOREBOOKS_ENDPOINT, addBook, token.getToken())
+        .post();
+    return isbnArray.get(0).getIsbn();
+  }
+
+  public void deleteBooks(AccountNewUserRequestModel user) {
+    token = getGenerateToken(user);
+    userId = apiUser.getLogin(user);
+    new RestWrapper(BOOK_STOREBOOKS_ENDPOINT + "?UserId=" + userId, token.getToken())
+        .delete();
+  }
+
+  @Step("Добавить книгу пользователю")
+  public void postBooks() {
+    user = settingUser();
+    token = getGenerateToken(user);
+    userId = apiUser.getLogin(user);
+    isbnArray = getISBN();
+    addBook = formAddBook(userId, isbnArray);
+    response = new RestWrapper(BOOK_STOREBOOKS_ENDPOINT, addBook, token.getToken())
+        .post()
         .shouldGiveResponce();
-    assertEquals(isbnArray, responce.as(BookAddPostResponceModel.class).getBooks());
+  }
+
+  @Step("Проверить добавление книги пользователю")
+  public void checkPostBooks() {
+    new RestWrapper()
+        .setResponse(response)
+        .shouldHaveStatusCode(201)
+        .shouldHaveJsonPath("books[0].isbn", containsString(isbnArray.get(0).getIsbn()));
   }
 
   @Step("Получить список книг")
-  public Map<String, ?> successfulGetBooks() {
-    Response responce = new RestWrapper()
-        .get(endpoints.bookStoreBooksEndpoint)
+  public Map<String, ?> getBooks() {
+    response = new RestWrapper(BOOK_STOREBOOKS_ENDPOINT)
+        .get()
         .shouldHaveStatusCode(200)
         .shouldGiveResponce();
-    Map<String, ?> book = responce.path("books.find{it}");
-    return book;
+    return response.path("books.find{it}");
+  }
+
+  @Step("Проверить получение списка книг")
+  public void checkGetBooks() {
+    new RestWrapper()
+        .setResponse(response)
+        .shouldHaveStatusCode(200);
   }
 
   @Step("Получить книгу")
-  public void successfulGetBook() {
-    Map<String, ?> book = successfulGetBooks();
-    String isbn = book.get("isbn").toString();
-    Response responce = new RestWrapper()
-        .get(endpoints.bookStoreBookEndpoint + "?ISBN=" + isbn)
-        .shouldHaveStatusCode(200)
+  public void getBook() {
+    bookMap = getBooks();
+    isbn = bookMap.get("isbn").toString();
+    response = new RestWrapper(BOOK_STOREBOOK_ENDPOINT + "?ISBN=" + isbn)
+        .get()
         .shouldGiveResponce();
-    assertEquals(book.get("title"), responce.as(BookGetResponceModel.class).getTitle());
-    assertEquals(book.get("author"), responce.as(BookGetResponceModel.class).getAuthor());
   }
 
-  @Step("Удаление всех книг у пользователя")
-  public void successfulDeleteBooks() {
-    AccountNewUserRequestModel user = apiUser.setNewUser();
-    successfulPostBooks(user);
-    AccountGenerateTokenModel token = apiUser.getToken(user);
-    String userId = apiUser.getLogin(user);
+  @Step("Проверить получение книги")
+  public void checkGetBook() {
     new RestWrapper()
-        .delete(endpoints.bookStoreBooksEndpoint + "?UserId=" + userId, token.getToken())
+        .setResponse(response)
+        .shouldHaveStatusCode(200)
+        .shouldHaveJsonPath("isbn", containsString(bookMap.get("isbn").toString()))
+        .shouldHaveJsonPath("title", containsString(bookMap.get("title").toString()))
+        .shouldHaveJsonPath("subTitle", containsString(bookMap.get("subTitle").toString()))
+        .shouldHaveJsonPath("author", containsString(bookMap.get("author").toString()))
+        .shouldHaveJsonPath("publish_date", containsString(bookMap.get("publish_date").toString()))
+        .shouldHaveJsonPath("publisher", containsString(bookMap.get("publisher").toString()))
+        .shouldHaveJsonPath("description", containsString(bookMap.get("description").toString()))
+        .shouldHaveJsonPath("website", containsString(bookMap.get("website").toString()));
+  }
+
+  @Step("Удалить все книги у пользователя")
+  public void deleteBooks() {
+    user = settingUser();
+    postBooks(user);
+    token = getGenerateToken(user);
+    userId = apiUser.getLogin(user);
+    response = new RestWrapper(BOOK_STOREBOOKS_ENDPOINT + "?UserId=" + userId, token.getToken())
+        .delete()
+        .shouldGiveResponce();
+  }
+
+  @Step("Удалить одну книги у пользователя")
+  public void deleteBook() {
+    user = settingUser();
+    isbn = postBooks(user);
+    token = getGenerateToken(user);
+    userId = apiUser.getLogin(user);
+    book = formChangeBook(isbn, userId);
+    response = new RestWrapper(BOOK_STOREBOOK_ENDPOINT, book, token.getToken())
+        .delete()
+        .shouldGiveResponce();
+  }
+
+  @Step("Проверить удаление  книг у пользователя")
+  public void checkDeleteBooks() {
+    new RestWrapper()
+        .setResponse(response)
         .shouldHaveStatusCode(204);
   }
 
-  @Step("Удаление одной книги у пользователя")
-  public void successfulDeleteBook() {
-    AccountNewUserRequestModel user = apiUser.setNewUser();
-    String isbn = successfulPostBooks(user);
-    AccountGenerateTokenModel token = apiUser.getToken(user);
-    String userId = apiUser.getLogin(user);
-    BookDeleteRequestModel book = new BookDeleteRequestModel();
-    book.setIsbn(isbn);
-    book.setUserId(userId);
-    new RestWrapper()
-        .delete(endpoints.bookStoreBookEndpoint, book, token.getToken())
-        .shouldHaveStatusCode(204);
+  @Step("Обновить данные о книге пользователя")
+  public void putBooks() {
+    user = settingUser();
+    isbn = postBooks(user);
+    token = getGenerateToken(user);
+    userId = apiUser.getLogin(user);
+    book = formChangeBook("9781449337711", userId);
+    response = new RestWrapper(BOOK_STOREBOOKS_ENDPOINT + "/" + isbn, book, token.getToken())
+        .put()
+        .shouldGiveResponce();
   }
 
-  @Step("Обновление данных о книге пользователя")
-  public void successfulPutBooks() {
-    AccountNewUserRequestModel user = apiUser.setNewUser();
-    String isbn = successfulPostBooks(user);
-    AccountGenerateTokenModel token = apiUser.getToken(user);
-    String userId = apiUser.getLogin(user);
-    BookDeleteRequestModel book = new BookDeleteRequestModel();
-    book.setIsbn("9781449337711");
-    book.setUserId(userId);
+  @Step("Проверить обновленные данны о книге пользователя")
+  public void checkPutBooks() {
     new RestWrapper()
-        .put(endpoints.bookStoreBooksEndpoint + "/" + isbn, book, token.getToken())
-        .shouldHaveStatusCode(200);
+        .setResponse(response)
+        .shouldHaveStatusCode(200)
+        .shouldHaveJsonPath("userId", containsString(userId))
+        .shouldHaveJsonPath("username", containsString(user.getUserName()));
   }
 }

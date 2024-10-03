@@ -1,14 +1,21 @@
 package ui.tests;
 
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import helpers.config.BaseTest;
-import ui.steps.loginUser.LoginUserSteps;
+import helpers.utils.BaseTest;
+import ui.steps.LoginUserSteps;
 
+@Epic("UI")
 public class LoginUserTests extends BaseTest {
 
   LoginUserSteps steps = new LoginUserSteps();
 
+  @Severity(SeverityLevel.BLOCKER)
+  @Feature("LoginUserTests")
   @Test
   @DisplayName("Успешная авторизация")
   void successLoginBookStore() {
@@ -18,6 +25,8 @@ public class LoginUserTests extends BaseTest {
     steps.checkAuthorizedPageLoginUser();
   }
 
+  @Severity(SeverityLevel.CRITICAL)
+  @Feature("LoginUserTests")
   @Test
   @DisplayName("Неуспешная авторизация")
   void errorLoginBookStore() {

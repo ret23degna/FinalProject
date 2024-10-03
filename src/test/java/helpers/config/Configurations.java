@@ -5,19 +5,19 @@ import org.aeonbits.owner.Config;
 @Config.Sources("file:src/test/resources/config.properties")
 public interface Configurations extends Config {
 
-  @Key("PageLoadStrategy")
+  @Key("page.load.strategy")
   @DefaultValue("eager")
   String getPageLoadStrategy();
 
-  @Key("BrowserSize")
+  @Key("browser.size")
   @DefaultValue("1920x1080")
   String getBrowserSize();
 
-  @Key("BaseUrl")
+  @Key("base.url")
   @DefaultValue("https://demoqa.com")
   String getBaseUrl();
 
-  @Key("Browser")
+  @Key("browser")
   @DefaultValue("chrome")
   String getBrowser();
 }

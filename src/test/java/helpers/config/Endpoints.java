@@ -2,13 +2,13 @@ package helpers.config;
 
 public class Endpoints {
 
-  public static final String accountUserEndpoint = "/Account/v1/User";
-  public static final String accountTokenEndpoint = "/Account/v1/GenerateToken";
-  public static final String accountAuthorizedEndpoint = "/Account/v1/Authorized";
-  public static final String accountLoginEndpoint = "/Account/v1/Login";
-  public static final String bookStoreBooksEndpoint = "/BookStore/v1/Books";
-  public static final String bookStoreBookEndpoint = "/BookStore/v1/Book";
-  public static final String pageLoginUser = "/login";
-  public static final String pageProfile = "/profile";
-  public static final String pageRegisterUser = "/register";
+  public static final String ACCOUNT_USER_ENDPOINT = "/Account/v1/User";
+  public static final String ACCOUNT_TOKEN_ENDPOINT = "/Account/v1/GenerateToken";
+  public static final String ACCOUNT_AUTHORIZED_ENDPOINT = "/Account/v1/Authorized";
+  public static final String ACCOUNT_LOGIN_ENDPOINT = "/Account/v1/Login";
+  public static final String BOOK_STOREBOOKS_ENDPOINT = "/BookStore/v1/Books";
+  public static final String BOOK_STOREBOOK_ENDPOINT = "/BookStore/v1/Book";
+  public static final String PAGE_LOGIN_USER = "/login";
+  public static final String PAGE_PROFILE = "/profile";
+  public static final String PAGE_REGISTER_USER = "/register";
 }

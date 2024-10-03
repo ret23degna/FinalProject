@@ -19,11 +19,11 @@ public class LocatorsLoginUser {
     return $("#login").as("Button login user");
   }
 
-  public SelenideElement invalidLable() {
+  public SelenideElement invalidLabel() {
     return $("#name").as("Invalid lable");
   }
 
-  public SelenideElement loginLable() {
+  public SelenideElement loginLabel() {
     return $("#userForm").$("h5").as("Login lable");
   }
 

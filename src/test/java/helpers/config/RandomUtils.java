@@ -4,23 +4,23 @@ import com.github.javafaker.Faker;
 
 public class RandomUtils {
 
-  Faker faker = new Faker();
+  private static Faker faker = new Faker();
 
-  public String login() {
-    return faker.name().firstName() + "_" + faker.name().lastName() + "_" + String.valueOf(
-        faker.number().numberBetween(0, 10));
+  public static String login() {
+    return faker.name().firstName() + "_" + faker.name().lastName() + "_" +
+        faker.number().numberBetween(0, 10);
   }
 
-  public String password() {
-    return faker.food().ingredient() + "_" + faker.name().lastName() + "_" + String.valueOf(
-        faker.number().numberBetween(0, 10)) + "!";
+  public static String password() {
+    return faker.food().ingredient() + "_" + faker.name().lastName() + "_" +
+        faker.number().numberBetween(0, 10) + "!";
   }
 
-  public String lastName() {
+  public static String lastName() {
     return faker.name().firstName();
   }
 
-  public String firstName() {
+  public static String firstName() {
     return faker.name().lastName();
   }
 }

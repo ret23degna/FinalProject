@@ -1,9 +1,13 @@
 package api.steps;
 
+import static api.templates.AccountTemplates.getGenerateToken;
+import static api.templates.AccountTemplates.getNewUser;
+import static helpers.config.Endpoints.ACCOUNT_AUTHORIZED_ENDPOINT;
+import static helpers.config.Endpoints.ACCOUNT_LOGIN_ENDPOINT;
+import static helpers.config.Endpoints.ACCOUNT_TOKEN_ENDPOINT;
+import static helpers.config.Endpoints.ACCOUNT_USER_ENDPOINT;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import helpers.config.Endpoints;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;;
 import java.util.HashMap;
@@ -11,19 +15,20 @@ import java.util.Map;
 import helpers.models.AccountGenerateTokenModel;
 import helpers.models.AccountNewUserRequestModel;
 import org.openqa.selenium.Cookie;
-import helpers.config.RandomUtils;
 
 public class ApiUserSteps {
 
-  Endpoints endpoints = new Endpoints();
-  RandomUtils random = new RandomUtils();
+  private Response response;
+  private String userId;
+  private AccountNewUserRequestModel user;
+  private AccountGenerateTokenModel token;
 
-  public Map<String, Cookie> getCookie(AccountNewUserRequestModel User) {
+  public Map<String, Cookie> getCookie(AccountNewUserRequestModel user) {
     String cookieTokenKey = "token";
     String cookieExpiresKey = "expires";
     String cookieUserIDKey = "userID";
-    String cookieUserIDValue = getLogin(User);
-    AccountGenerateTokenModel token = getToken(User);
+    String cookieUserIDValue = getLogin(user);
+    token = getGenerateToken(user);
     String cookieTokenValue = token.getToken();
     String cookieExpiresValue = token.getExpires();
     Cookie cookieToken = new Cookie(cookieTokenKey, cookieTokenValue);
@@ -36,80 +41,109 @@ public class ApiUserSteps {
     return cookies;
   }
 
-  private AccountNewUserRequestModel getLoginPassword() {
-    AccountNewUserRequestModel loginPassword = new AccountNewUserRequestModel();
-    loginPassword.setUserName(random.login());
-    loginPassword.setPassword(random.password());
-    return loginPassword;
-  }
-
   public String getLogin(AccountNewUserRequestModel user) {
-    Response response = new RestWrapper()
-        .post(endpoints.accountLoginEndpoint, user)
-        .shouldHaveStatusCode(200)
+    Response response = new RestWrapper(ACCOUNT_LOGIN_ENDPOINT, user)
+        .post()
         .shouldGiveResponce();
     return response.path("userId");
   }
 
-  public AccountGenerateTokenModel getToken(AccountNewUserRequestModel user) {
-    Response response = new RestWrapper()
-        .post(endpoints.accountTokenEndpoint, user)
-        .shouldHaveStatusCode(200)
-        .shouldHaveJsonPath("status", containsString("Success"))
+  public void newUser(AccountNewUserRequestModel user) {
+    response = new RestWrapper(ACCOUNT_USER_ENDPOINT, user)
+        .post()
         .shouldGiveResponce();
-    AccountGenerateTokenModel token = response.as(AccountGenerateTokenModel.class);
-    return token;
   }
 
-  @Step("Создание нового пользователя")
-  public AccountNewUserRequestModel setNewUser() {
-    AccountNewUserRequestModel user = getLoginPassword();
-    new RestWrapper()
-        .post(endpoints.accountUserEndpoint, user)
-        .shouldHaveStatusCode(201)
-        .shouldHaveJsonPath("username", containsString(user.getUserName()));
+  @Step("Создать нового пользователя")
+  public AccountNewUserRequestModel newUser() {
+    user = getNewUser();
+    response = new RestWrapper(ACCOUNT_USER_ENDPOINT, user)
+        .post()
+        .shouldGiveResponce();
     return user;
   }
 
-  @Step("Генерация токена")
+  @Step("Проверить cоздание нового пользователя")
+  public void checkNewUser() {
+    new RestWrapper()
+        .setResponse(response)
+        .shouldHaveStatusCode(201)
+        .shouldHaveJsonPath("username", containsString(user.getUserName()));
+  }
+
+  @Step("Генерировать токен")
   public void getToken() {
-    AccountNewUserRequestModel user = setNewUser();
-    new RestWrapper()
-        .post(endpoints.accountTokenEndpoint, user)
-        .shouldHaveStatusCode(200)
-        .shouldHaveJsonPath("status", containsString("Success"));
-  }
-
-  @Step("Авторизация пользователя")
-  public void setAuthorized() {
-    AccountNewUserRequestModel user = setNewUser();
-    AccountGenerateTokenModel token = getToken(user);
-    Response response = new RestWrapper()
-        .post(endpoints.accountAuthorizedEndpoint, user, token.getToken())
-        .shouldHaveStatusCode(200)
+    ApiBookSteps api = new ApiBookSteps();
+    user = api.settingUser();
+    response = new RestWrapper(ACCOUNT_TOKEN_ENDPOINT, user)
+        .post()
         .shouldGiveResponce();
-    assertEquals("true", response.getBody().asString());//подумать тут
-
+    ;
   }
 
-  @Step("Удаление пользователя")
-  public void setDeleteUser() {
-    AccountNewUserRequestModel user = setNewUser();
-    AccountGenerateTokenModel token = getToken(user);
-    String userId = getLogin(user);
+  @Step("Проверить генерацию токена")
+  public void checkGetToken() {
     new RestWrapper()
-        .delete(endpoints.accountUserEndpoint + "/" + userId, token.getToken())
+        .setResponse(response)
+        .shouldHaveStatusCode(200)
+        .shouldHaveJsonPath("status", containsString("Success"))
+        .shouldHaveJsonPath("result", containsString("User authorized successfully"));
+  }
+
+  @Step("Авторизовать пользователя")
+  public void authorized() {
+    ApiBookSteps api = new ApiBookSteps();
+    user = api.settingUser();
+    token = getGenerateToken(user);
+    response = new RestWrapper(ACCOUNT_AUTHORIZED_ENDPOINT, user, token.getToken())
+        .post()
+        .shouldGiveResponce();
+  }
+
+  @Step("Проверить авторизацию пользователя")
+  public void checkAuthorized() {
+    new RestWrapper()
+        .setResponse(response)
+        .shouldHaveStatusCode(200)
+        .responseBodyIsNoJson("true");
+  }
+
+  @Step("Удалить пользователя")
+  public void deleteUser() {
+    //  user = newUser();;
+    ApiBookSteps api = new ApiBookSteps();
+    user = api.settingUser();
+    token = getGenerateToken(user);
+    String userId = getLogin(user);
+    response = new RestWrapper(ACCOUNT_USER_ENDPOINT + "/" + userId, token.getToken())
+        .delete()
+        .shouldGiveResponce();
+  }
+
+  @Step("Проверить удаление пользователя")
+  public void checkDeleteUser() {
+    new RestWrapper()
+        .setResponse(response)
         .shouldHaveStatusCode(204);
   }
 
   @Step("Получить информацию о пользователе")
   public void getUser() {
-    AccountNewUserRequestModel user = setNewUser();
-    AccountGenerateTokenModel token = getToken(user);
-    String userId = getLogin(user);
+    ApiBookSteps api = new ApiBookSteps();
+    user = api.settingUser();
+    token = getGenerateToken(user);
+    userId = getLogin(user);
+    response = new RestWrapper(ACCOUNT_USER_ENDPOINT + "/" + userId, token.getToken())
+        .get()
+        .shouldGiveResponce();
+  }
+
+  @Step("Проверить информацию о пользователе")
+  public void checkGetUser() {
     new RestWrapper()
-        .get(endpoints.accountUserEndpoint + "/" + userId, token.getToken())
+        .setResponse(response)
         .shouldHaveStatusCode(200)
+        .shouldHaveJsonPath("userId", containsString(userId))
         .shouldHaveJsonPath("username", containsString(user.getUserName()));
   }
 }
