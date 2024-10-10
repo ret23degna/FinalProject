@@ -8,6 +8,7 @@ import static helpers.config.Endpoints.PAGE_PROFILE;
 
 import api.steps.ApiBookSteps;
 import api.steps.ApiUserSteps;
+import api.templates.AccountTemplates;
 import com.codeborne.selenide.Selenide;
 import helpers.models.AccountNewUserRequestModel;
 import io.qameta.allure.Step;
@@ -19,21 +20,50 @@ import ui.pages.LocatorsProfile;
 
 public class ProfileSteps {
 
-  private ApiUserSteps apiUser = new ApiUserSteps();
-  private ApiBookSteps apiBook = new ApiBookSteps();
-  private LocatorsProfile locatorProfile = new LocatorsProfile();
-  private LocatorsLoginUser locatorLoginUser = new LocatorsLoginUser();
+  private ApiUserSteps apiUser;
+  private ApiBookSteps apiBook;
+  private LocatorsProfile locatorProfile;
+  private LocatorsLoginUser locatorLoginUser;
+
+  public ProfileSteps() {
+    this.apiUser = new ApiUserSteps();
+    this.apiBook = new ApiBookSteps();
+    this.locatorProfile = new LocatorsProfile();
+    this.locatorLoginUser = new LocatorsLoginUser();
+
+  }
+
   private AccountNewUserRequestModel user;
 
-  @Step("Авторизоваться")
-  public void loginProfile() {
-    user = apiBook.settingUser();
-    apiBook.postBooks(user);
+  private void authorized(AccountNewUserRequestModel user) {
     Map<String, Cookie> cookie = apiUser.getCookie(user);
     open("/images/Toolsqa.jpg");
-    getWebDriver().manage().addCookie(cookie.get("token"));
-    getWebDriver().manage().addCookie(cookie.get("expires"));
-    getWebDriver().manage().addCookie(cookie.get("userID"));
+    for (Map.Entry<String, Cookie> cookieEntry : cookie.entrySet()) {
+      getWebDriver().manage().addCookie(cookieEntry.getValue());
+    }
+  }
+
+  private void acceptAlert() {
+    Alert alert = Selenide.switchTo().alert();
+    alert.accept();
+  }
+
+  private void login(AccountNewUserRequestModel user) {
+    apiBook.postBooks(user);
+    authorized(user);
+  }
+
+  @Step("Авторизоваться")
+  public void loginBasicProfile() {
+    user = apiBook.settingUser();
+    login(user);
+  }
+
+  @Step("Авторизоваться")
+  public void loginNewProfile() {
+    user = new AccountTemplates().getNewUser();
+    apiUser.newUser(user);
+    login(user);
   }
 
   @Step("Открыть страницу профиля")
@@ -66,8 +96,7 @@ public class ProfileSteps {
 
   @Step("Проверить удаления профиля")
   public void checkDeleteAccountPageProfile() {
-    Alert alert = Selenide.switchTo().alert();
-    alert.accept();
+    acceptAlert();
     locatorLoginUser.loginLabel().shouldHave(text("Login in Book Store"));
   }
 
@@ -90,8 +119,7 @@ public class ProfileSteps {
 
   @Step("Проверить отмену удаления книги")
   public void checkDeleteBooksPageProfile() {
-    Alert alert = Selenide.switchTo().alert();
-    alert.accept();
+    acceptAlert();
     locatorProfile.book().shouldBe(hidden);
   }
 

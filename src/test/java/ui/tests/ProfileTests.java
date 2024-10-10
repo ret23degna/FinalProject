@@ -1,5 +1,6 @@
 package ui.tests;
 
+
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
@@ -19,7 +20,7 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Выход из профиля")
   void logOutBookStore() {
-    steps.loginProfile();
+    steps.loginBasicProfile();
     steps.openPageProfile();
     steps.clickButtonLogOutPageProfile();
     steps.checkLogOutPageProfile();
@@ -30,7 +31,7 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Удаление аккаунта")
   void deleteAccountBookStore() {
-    steps.loginProfile();
+    steps.loginNewProfile();
     steps.openPageProfile();
     steps.deleteAccountPageProfile();
     steps.checkDeleteAccountPageProfile();
@@ -41,7 +42,7 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Отмена удаление аккаунта")
   void cancelDeleteAccountBookStore() {
-    steps.loginProfile();
+    steps.loginBasicProfile();
     steps.openPageProfile();
     steps.cancelDeleteAccountPageProfile();
     steps.checkCancelPageProfile();
@@ -52,7 +53,7 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Удаление всех книг")
   void deleteAllBooks() {
-    steps.loginProfile();
+    steps.loginBasicProfile();
     steps.openPageProfile();
     steps.deleteAllBooksPageProfile();
     steps.checkDeleteBooksPageProfile();
@@ -63,7 +64,7 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Отмена удаления всех книг")
   void cancelDeleteAllBooks() {
-    steps.loginProfile();
+    steps.loginBasicProfile();
     steps.openPageProfile();
     steps.cancelDeleteAllBooksPageProfile();
     steps.checkCancelPageProfile();
@@ -74,10 +75,13 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Удаление одной книги")
   void deleteBook() {
-    steps.loginProfile();
+    steps.loginBasicProfile();
     steps.openPageProfile();
+
     steps.deleteBookPageProfile();
+
     steps.checkDeleteBooksPageProfile();
+
   }
 
   @Severity(SeverityLevel.NORMAL)
@@ -85,7 +89,7 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Отмена удаление одной книги")
   void cancelDeleteBook() {
-    steps.loginProfile();
+    steps.loginBasicProfile();
     steps.openPageProfile();
     steps.cancelDeleteBookPageProfile();
     steps.checkCancelPageProfile();

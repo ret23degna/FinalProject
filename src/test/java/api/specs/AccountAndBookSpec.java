@@ -19,12 +19,20 @@ public class AccountAndBookSpec {
   private static final Logger logger = LogManager.getLogger(AccountAndBookSpec.class);
   private static final PrintStream logStream = IoBuilder.forLogger(logger)
       .buildPrintStream();
+  public static AllureRestAssured allureFilter = new AllureRestAssured()
+      .setRequestTemplate("custom-http-request.ftl")
+      .setResponseTemplate("custom-http-response.ftl");
   public static RequestSpecification requestSpec = with()
+      .filter(allureFilter)
       .filter(new RequestLoggingFilter(LogDetail.ALL, false, logStream, true))
       .filter(new ResponseLoggingFilter(LogDetail.ALL, false, logStream))
       .contentType(JSON)
       .baseUri(config.getBaseUrl());
-  public static AllureRestAssured allureFilter = new AllureRestAssured()
-      .setRequestTemplate("custom-http-request.ftl")
-      .setResponseTemplate("custom-http-response.ftl");
+
+  public static RequestSpecification requestSpecWithAuth(String token) {
+    if (token != "") {
+      return requestSpec.auth().oauth2(token);
+    }
+    return requestSpec;
+  }
 }

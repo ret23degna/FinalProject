@@ -13,7 +13,11 @@ import ui.pages.LocatorsRegisterUser;
 
 public class RegisterUserSteps {
 
-  LocatorsRegisterUser locator = new LocatorsRegisterUser();
+  LocatorsRegisterUser locator;
+
+  public RegisterUserSteps() {
+    this.locator = new LocatorsRegisterUser();
+  }
 
   @Step("Открыть страницу регистрации пользователя")
   public void openPageRegisterUser() {

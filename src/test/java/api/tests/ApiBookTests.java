@@ -1,5 +1,7 @@
 package api.tests;
 
+import static org.hamcrest.Matchers.containsString;
+
 import api.steps.ApiBookSteps;
 import helpers.utils.BaseTest;
 import io.qameta.allure.Epic;
@@ -19,8 +21,9 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Добавление книги пользователю")
   void successfulPostBooks() {
-    steps.postBooks();
-    steps.checkPostBooks();
+    steps.postBooks()
+        .shouldHaveStatusCode(201)
+        .shouldHaveJsonPath("books[0].isbn", containsString("9781449325862"));
   }
 
   @Severity(SeverityLevel.CRITICAL)
@@ -28,8 +31,8 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Получение списка книг")
   void successfulGetBooks() {
-    steps.getBooks();
-    steps.checkGetBooks();
+    steps.getBooks()
+        .shouldHaveStatusCode(200);
   }
 
   @Severity(SeverityLevel.CRITICAL)
@@ -37,8 +40,15 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Получение книги")
   void successfulGetBook() {
-    steps.getBook();
-    steps.checkGetBook();
+    steps.getBook()
+        .shouldHaveStatusCode(200)
+        .shouldHaveJsonPath("isbn", containsString("9781449325862"))
+        .shouldHaveJsonPath("title", containsString("Git Pocket Guide"))
+        .shouldHaveJsonPath("subTitle", containsString("A Working Introduction"))
+        .shouldHaveJsonPath("author", containsString("Richard E. Silverman"))
+        .shouldHaveJsonPath("publish_date", containsString("2020-06-04T08:48:39.000Z"))
+        .shouldHaveJsonPath("publisher", containsString("O'Reilly Media"));
+
   }
 
   @Severity(SeverityLevel.NORMAL)
@@ -46,8 +56,8 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Удаление всех книг у пользователя")
   void successfulDeleteBooks() {
-    steps.deleteBooks();
-    steps.checkDeleteBooks();
+    steps.deleteBooks()
+        .shouldHaveStatusCode(204);
   }
 
   @Severity(SeverityLevel.NORMAL)
@@ -55,8 +65,8 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Удаление одной книги у пользователя")
   void successfulDeleteBook() {
-    steps.deleteBook();
-    steps.checkDeleteBooks();
+    steps.deleteBook()
+        .shouldHaveStatusCode(204);
   }
 
   @Severity(SeverityLevel.NORMAL)
@@ -64,7 +74,9 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Обновление данных о книге пользователя")
   void successfulPutBooks() {
-    steps.putBooks();
-    steps.checkPutBooks();
+    steps.putBooks()
+        .shouldHaveStatusCode(200)
+        .shouldHaveJsonPath("userId", containsString("0d2a0ab8-725e-49b7-85e1-2f4981b81d4f"))
+        .shouldHaveJsonPath("username", containsString("Kakabyaka_47"));
   }
 }

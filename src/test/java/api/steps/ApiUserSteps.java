@@ -1,36 +1,35 @@
 package api.steps;
 
-import static api.templates.AccountTemplates.getGenerateToken;
-import static api.templates.AccountTemplates.getNewUser;
 import static helpers.config.Endpoints.ACCOUNT_AUTHORIZED_ENDPOINT;
 import static helpers.config.Endpoints.ACCOUNT_LOGIN_ENDPOINT;
 import static helpers.config.Endpoints.ACCOUNT_TOKEN_ENDPOINT;
 import static helpers.config.Endpoints.ACCOUNT_USER_ENDPOINT;
-import static org.hamcrest.Matchers.containsString;
+import static helpers.utils.BaseTest.config;
 
+import api.templates.AccountTemplates;
 import io.qameta.allure.Step;
-import io.restassured.response.Response;;
+import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import helpers.models.AccountGenerateTokenModel;
 import helpers.models.AccountNewUserRequestModel;
 import org.openqa.selenium.Cookie;
 
 public class ApiUserSteps {
 
-  private Response response;
-  private String userId;
-  private AccountNewUserRequestModel user;
-  private AccountGenerateTokenModel token;
+  private AccountNewUserRequestModel basicUser;
+
+  public ApiUserSteps() {
+    this.basicUser = new AccountTemplates().getBasicUser();
+  }
 
   public Map<String, Cookie> getCookie(AccountNewUserRequestModel user) {
     String cookieTokenKey = "token";
     String cookieExpiresKey = "expires";
     String cookieUserIDKey = "userID";
-    String cookieUserIDValue = getLogin(user);
-    token = getGenerateToken(user);
-    String cookieTokenValue = token.getToken();
-    String cookieExpiresValue = token.getExpires();
+    String cookieUserIDValue = getLogin(user).getResponse().path("userId");
+    Response response = getToken(user).getResponse();
+    String cookieTokenValue = response.path("token");
+    String cookieExpiresValue = response.path("expires");
     Cookie cookieToken = new Cookie(cookieTokenKey, cookieTokenValue);
     Cookie cookieExpires = new Cookie(cookieExpiresKey, cookieExpiresValue);
     Cookie cookieUserID = new Cookie(cookieUserIDKey, cookieUserIDValue);
@@ -41,109 +40,58 @@ public class ApiUserSteps {
     return cookies;
   }
 
-  public String getLogin(AccountNewUserRequestModel user) {
-    Response response = new RestWrapper(ACCOUNT_LOGIN_ENDPOINT, user)
-        .post()
-        .shouldGiveResponce();
-    return response.path("userId");
+  public RestWrapper getLogin(AccountNewUserRequestModel user) {
+    return new RestWrapper(ACCOUNT_LOGIN_ENDPOINT, user)
+        .post();
   }
 
   public void newUser(AccountNewUserRequestModel user) {
-    response = new RestWrapper(ACCOUNT_USER_ENDPOINT, user)
-        .post()
-        .shouldGiveResponce();
+    new RestWrapper(ACCOUNT_USER_ENDPOINT, user)
+        .post();
+  }
+
+  public RestWrapper getToken(AccountNewUserRequestModel user) {
+    return new RestWrapper(ACCOUNT_TOKEN_ENDPOINT, user)
+        .post();
   }
 
   @Step("Создать нового пользователя")
-  public AccountNewUserRequestModel newUser() {
-    user = getNewUser();
-    response = new RestWrapper(ACCOUNT_USER_ENDPOINT, user)
-        .post()
-        .shouldGiveResponce();
-    return user;
+  public RestWrapper newUser() {
+    AccountNewUserRequestModel newUser = new AccountTemplates().getNewUser();
+    return new RestWrapper(ACCOUNT_USER_ENDPOINT, newUser)
+        .post();
   }
 
-  @Step("Проверить cоздание нового пользователя")
-  public void checkNewUser() {
-    new RestWrapper()
-        .setResponse(response)
-        .shouldHaveStatusCode(201)
-        .shouldHaveJsonPath("username", containsString(user.getUserName()));
-  }
-
-  @Step("Генерировать токен")
-  public void getToken() {
-    ApiBookSteps api = new ApiBookSteps();
-    user = api.settingUser();
-    response = new RestWrapper(ACCOUNT_TOKEN_ENDPOINT, user)
-        .post()
-        .shouldGiveResponce();
-    ;
-  }
-
-  @Step("Проверить генерацию токена")
-  public void checkGetToken() {
-    new RestWrapper()
-        .setResponse(response)
-        .shouldHaveStatusCode(200)
-        .shouldHaveJsonPath("status", containsString("Success"))
-        .shouldHaveJsonPath("result", containsString("User authorized successfully"));
-  }
 
   @Step("Авторизовать пользователя")
-  public void authorized() {
-    ApiBookSteps api = new ApiBookSteps();
-    user = api.settingUser();
-    token = getGenerateToken(user);
-    response = new RestWrapper(ACCOUNT_AUTHORIZED_ENDPOINT, user, token.getToken())
-        .post()
-        .shouldGiveResponce();
-  }
-
-  @Step("Проверить авторизацию пользователя")
-  public void checkAuthorized() {
-    new RestWrapper()
-        .setResponse(response)
-        .shouldHaveStatusCode(200)
-        .responseBodyIsNoJson("true");
+  public RestWrapper authorized() {
+    String token = getToken().getResponse().path("token");
+    return new RestWrapper(ACCOUNT_AUTHORIZED_ENDPOINT, basicUser, token)
+        .post();
   }
 
   @Step("Удалить пользователя")
-  public void deleteUser() {
-    //  user = newUser();;
-    ApiBookSteps api = new ApiBookSteps();
-    user = api.settingUser();
-    token = getGenerateToken(user);
-    String userId = getLogin(user);
-    response = new RestWrapper(ACCOUNT_USER_ENDPOINT + "/" + userId, token.getToken())
-        .delete()
-        .shouldGiveResponce();
-  }
-
-  @Step("Проверить удаление пользователя")
-  public void checkDeleteUser() {
-    new RestWrapper()
-        .setResponse(response)
-        .shouldHaveStatusCode(204);
+  public RestWrapper deleteUser() {
+    AccountNewUserRequestModel newUser = new AccountTemplates().getNewUser();
+    newUser(newUser);
+    String token = getToken(newUser).getResponse().path("token");
+    String userId = getLogin(newUser).getResponse().path("userId");
+    return new RestWrapper(ACCOUNT_USER_ENDPOINT + "/" + userId, token)
+        .delete();
   }
 
   @Step("Получить информацию о пользователе")
-  public void getUser() {
-    ApiBookSteps api = new ApiBookSteps();
-    user = api.settingUser();
-    token = getGenerateToken(user);
-    userId = getLogin(user);
-    response = new RestWrapper(ACCOUNT_USER_ENDPOINT + "/" + userId, token.getToken())
-        .get()
-        .shouldGiveResponce();
+  public RestWrapper getUser() {
+    String token = getToken(basicUser).getResponse().path("token");
+    String userId = config.getIdentifier();
+    return new RestWrapper(ACCOUNT_USER_ENDPOINT + "/" + userId, token)
+        .get();
   }
 
-  @Step("Проверить информацию о пользователе")
-  public void checkGetUser() {
-    new RestWrapper()
-        .setResponse(response)
-        .shouldHaveStatusCode(200)
-        .shouldHaveJsonPath("userId", containsString(userId))
-        .shouldHaveJsonPath("username", containsString(user.getUserName()));
+  @Step("Генерировать токен")
+  public RestWrapper getToken() {
+    return new RestWrapper(ACCOUNT_TOKEN_ENDPOINT, basicUser)
+        .post();
   }
+
 }

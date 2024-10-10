@@ -20,4 +20,18 @@ public interface Configurations extends Config {
   @Key("browser")
   @DefaultValue("chrome")
   String getBrowser();
+
+  @Key("login")
+  @DefaultValue("Kakabyaka_47")
+  String geLogin();
+
+  @Key("password")
+  @DefaultValue("22!!QQww")
+  String getPassword();
+
+  @Key("identifier")
+  @DefaultValue("")
+  String getIdentifier();
+
+
 }

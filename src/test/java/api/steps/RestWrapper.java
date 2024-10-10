@@ -1,10 +1,11 @@
 package api.steps;
 
-import static api.specs.AccountAndBookSpec.allureFilter;
 import static api.specs.AccountAndBookSpec.requestSpec;
+import static api.specs.AccountAndBookSpec.requestSpecWithAuth;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
+import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import org.hamcrest.Matcher;
 
@@ -48,71 +49,52 @@ public class RestWrapper {
 
   public RestWrapper post() {
     this.response = given()
-        .filter(allureFilter)
-        .spec(requestSpec)
+        .spec(requestSpecWithAuth(token))
         .body(body)
-        .auth().oauth2(token)
-        .when()
-        .post(endpoint)
-        .then()
-        .extract()
-        .response();
+        .post(endpoint);
     return this;
   }
 
   public RestWrapper get() {
     this.response = given()
-        .filter(allureFilter)
         .spec(requestSpec)
         .header("Authorization", "Bearer " + token)
-        .when()
-        .get(endpoint)
-        .then()
-        .extract()
-        .response();
+        .get(endpoint);
     return this;
   }
 
 
   public RestWrapper delete() {
     this.response = given()
-        .filter(allureFilter)
         .spec(requestSpec)
         .header("Authorization", "Bearer " + token)
         .body(body)
-        .when()
-        .delete(endpoint)
-        .then()
-        .extract()
-        .response();
+        .delete(endpoint);
     return this;
   }
 
   public RestWrapper put() {
     this.response = given()
-        .filter(allureFilter)
         .spec(requestSpec)
         .header("Authorization", "Bearer " + token)
         .body(body)
-        .when()
-        .put(endpoint)
-        .then()
-        .extract()
-        .response();
+        .put(endpoint);
     return this;
   }
 
+  @Step("Проверить код ответа")
   public RestWrapper shouldHaveStatusCode(int statusCode) {
     response.then().assertThat().statusCode(statusCode);
     return this;
   }
 
+  @Step("Проверить ожидаемые данные")
   public RestWrapper shouldHaveJsonPath(String jsonPath, Matcher matcher) {
     response.then().assertThat().body(jsonPath, matcher);
     return this;
   }
 
-  public Response shouldGiveResponce() {
+  public Response getResponse() {
     return response;
   }
 
@@ -121,8 +103,4 @@ public class RestWrapper {
     return this;
   }
 
-  public RestWrapper setResponse(Response response) {
-    this.response = response;
-    return this;
-  }
 }
