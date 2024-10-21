@@ -29,9 +29,15 @@ public class AccountAndBookSpec {
       .contentType(JSON)
       .baseUri(config.getBaseUrl());
 
-  public static RequestSpecification requestSpecWithAuth(String token) {
+
+
+  public static RequestSpecification requestSpecWithAuthorization(String token, String method) {
     if (token != "") {
-      return requestSpec.auth().oauth2(token);
+      if (method == "post") {
+        return requestSpec.auth().oauth2(token);
+      } else {
+        return requestSpec.header("Authorization", "Bearer " + token);
+      }
     }
     return requestSpec;
   }

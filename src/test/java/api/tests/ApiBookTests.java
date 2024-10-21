@@ -76,7 +76,7 @@ public class ApiBookTests extends BaseTest {
   void successfulPutBooks() {
     steps.putBooks()
         .shouldHaveStatusCode(200)
-        .shouldHaveJsonPath("userId", containsString("0d2a0ab8-725e-49b7-85e1-2f4981b81d4f"))
-        .shouldHaveJsonPath("username", containsString("Kakabyaka_47"));
+        .shouldHaveJsonPath("userId", containsString("7a854906-dfc3-4b4e-b527-1f8ba0c8070c"))
+        .shouldHaveJsonPath("username", containsString("Kakabyaka_48"));
   }
 }

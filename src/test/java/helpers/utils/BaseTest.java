@@ -12,15 +12,15 @@ public class BaseTest {
   public final static Configurations config = ConfigFactory.create(Configurations.class,
       System.getProperties());
 
- @BeforeAll
- public static void  BaseEach() {
-   Configuration.pageLoadStrategy = config.getPageLoadStrategy();
-   Configuration.browserSize = config.getBrowserSize();
-   Configuration.baseUrl = config.getBaseUrl();
-   Configuration.browser = config.getBrowser();
-   Configuration.screenshots = false;
-   Configuration.savePageSource=false;
-   SelenideLogger.addListener("allure", new AllureSelenide());
- }
+  @BeforeAll
+  public static void BaseEach() {
+    Configuration.pageLoadStrategy = config.getPageLoadStrategy();
+    Configuration.browserSize = config.getBrowserSize();
+    Configuration.baseUrl = config.getBaseUrl();
+    Configuration.browser = config.getBrowser();
+    Configuration.screenshots = false;
+    Configuration.savePageSource = false;
+    SelenideLogger.addListener("allure", new AllureSelenide());
+  }
 
 }

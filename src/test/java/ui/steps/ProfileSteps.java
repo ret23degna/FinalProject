@@ -1,5 +1,6 @@
 package ui.steps;
 
+import static api.steps.ApiSingleton.getCookie;
 import static com.codeborne.selenide.Condition.hidden;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.open;
@@ -19,51 +20,62 @@ import ui.pages.LocatorsLoginUser;
 import ui.pages.LocatorsProfile;
 
 public class ProfileSteps {
-
+  private AccountNewUserRequestModel user= new AccountTemplates().getBasicUser(), newUser;
   private ApiUserSteps apiUser;
   private ApiBookSteps apiBook;
   private LocatorsProfile locatorProfile;
   private LocatorsLoginUser locatorLoginUser;
+  private Map<String, Cookie> cookie;
 
   public ProfileSteps() {
     this.apiUser = new ApiUserSteps();
     this.apiBook = new ApiBookSteps();
     this.locatorProfile = new LocatorsProfile();
     this.locatorLoginUser = new LocatorsLoginUser();
-
   }
 
-  private AccountNewUserRequestModel user;
-
-  private void authorized(AccountNewUserRequestModel user) {
-    Map<String, Cookie> cookie = apiUser.getCookie(user);
-    open("/images/Toolsqa.jpg");
-    for (Map.Entry<String, Cookie> cookieEntry : cookie.entrySet()) {
-      getWebDriver().manage().addCookie(cookieEntry.getValue());
-    }
-  }
 
   private void acceptAlert() {
     Alert alert = Selenide.switchTo().alert();
     alert.accept();
   }
 
-  private void login(AccountNewUserRequestModel user) {
+  @Step("Предварительный шаг. Добавить книгу пользователю")
+  public void addBook() {
     apiBook.postBooks(user);
-    authorized(user);
   }
-
+  @Step("Предварительный шаг. Создать нового пользователя")
+  public void addNewUser() {
+    newUser = new AccountTemplates().getNewUser();
+    apiUser.newUser(newUser);
+  }
+  @Step("Предварительный шаг. Подготовить основного пользователя")
+  public void prepareBasicUser() {
+    apiBook.deleteBooks(user);
+  }
+  @Step("Предварительный шаг. Подготовить куки основного пользователя")
+  public void prepareCookieBasicUser() {
+   cookie = getCookie();
+  }
+  @Step("Предварительный шаг. Подготовить куки основного пользователя")
+  public void prepareCookieNewUser() {
+  cookie = apiUser.getCookie(newUser);
+  }
   @Step("Авторизоваться")
   public void loginBasicProfile() {
-    user = apiBook.settingUser();
-    login(user);
+    //UISinglton.getAuto();
+    open("/images/Toolsqa.jpg");
+    for (Map.Entry<String, Cookie> cookieEntry : cookie.entrySet()) {
+      getWebDriver().manage().addCookie(cookieEntry.getValue());
+    }
   }
 
   @Step("Авторизоваться")
   public void loginNewProfile() {
-    user = new AccountTemplates().getNewUser();
-    apiUser.newUser(user);
-    login(user);
+    open("/images/Toolsqa.jpg");
+    for (Map.Entry<String, Cookie> cookieEntry : cookie.entrySet()) {
+      getWebDriver().manage().addCookie(cookieEntry.getValue());
+    }
   }
 
   @Step("Открыть страницу профиля")

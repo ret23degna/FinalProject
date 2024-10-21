@@ -1,7 +1,6 @@
 package api.steps;
 
-import static api.specs.AccountAndBookSpec.requestSpec;
-import static api.specs.AccountAndBookSpec.requestSpecWithAuth;
+import static api.specs.AccountAndBookSpec.requestSpecWithAuthorization;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -12,71 +11,34 @@ import org.hamcrest.Matcher;
 public class RestWrapper {
 
   private Response response;
-  private String endpoint;
-  private Object body;
-  private String token;
 
-  public RestWrapper(String endpoint, Object body) {
-    this.endpoint = endpoint;
-    this.body = body;
-    this.token = "";
-  }
-
-  public RestWrapper(String endpoint, Object body, String token) {
-    this.endpoint = endpoint;
-    this.body = body;
-    this.token = token;
-  }
-
-  public RestWrapper(String endpoint, String token) {
-    this.endpoint = endpoint;
-    this.body = "";
-    this.token = token;
-
-  }
-
-  public RestWrapper(String endpoint) {
-    this.endpoint = endpoint;
-    this.body = "";
-    this.token = "";
-  }
-
-  public RestWrapper() {
-    this.endpoint = "";
-    this.body = "";
-    this.token = "";
-  }
-
-  public RestWrapper post() {
+  public RestWrapper post(String endpoint, Object body,String token) {
     this.response = given()
-        .spec(requestSpecWithAuth(token))
+        .spec(requestSpecWithAuthorization(token,"post"))
         .body(body)
         .post(endpoint);
     return this;
   }
 
-  public RestWrapper get() {
+  public RestWrapper get(String endpoint,String token) {
     this.response = given()
-        .spec(requestSpec)
-        .header("Authorization", "Bearer " + token)
+        .spec(requestSpecWithAuthorization(token,"get"))
         .get(endpoint);
     return this;
   }
 
 
-  public RestWrapper delete() {
+  public RestWrapper delete(String endpoint, Object body, String token) {
     this.response = given()
-        .spec(requestSpec)
-        .header("Authorization", "Bearer " + token)
+        .spec(requestSpecWithAuthorization(token,"delete"))
         .body(body)
         .delete(endpoint);
     return this;
   }
 
-  public RestWrapper put() {
+  public RestWrapper put(String endpoint, Object body,String token) {
     this.response = given()
-        .spec(requestSpec)
-        .header("Authorization", "Bearer " + token)
+        .spec(requestSpecWithAuthorization(token,"put"))
         .body(body)
         .put(endpoint);
     return this;

@@ -20,6 +20,7 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Выход из профиля")
   void logOutBookStore() {
+    steps.prepareCookieBasicUser();
     steps.loginBasicProfile();
     steps.openPageProfile();
     steps.clickButtonLogOutPageProfile();
@@ -31,6 +32,8 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Удаление аккаунта")
   void deleteAccountBookStore() {
+    steps.addNewUser();
+    steps.prepareCookieNewUser();
     steps.loginNewProfile();
     steps.openPageProfile();
     steps.deleteAccountPageProfile();
@@ -42,6 +45,7 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Отмена удаление аккаунта")
   void cancelDeleteAccountBookStore() {
+    steps.prepareCookieBasicUser();
     steps.loginBasicProfile();
     steps.openPageProfile();
     steps.cancelDeleteAccountPageProfile();
@@ -53,6 +57,9 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Удаление всех книг")
   void deleteAllBooks() {
+    steps.prepareBasicUser();
+    steps.prepareCookieBasicUser();
+    steps.addBook();
     steps.loginBasicProfile();
     steps.openPageProfile();
     steps.deleteAllBooksPageProfile();
@@ -64,6 +71,9 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Отмена удаления всех книг")
   void cancelDeleteAllBooks() {
+    steps.prepareBasicUser();
+    steps.prepareCookieBasicUser();
+    steps.addBook();
     steps.loginBasicProfile();
     steps.openPageProfile();
     steps.cancelDeleteAllBooksPageProfile();
@@ -75,11 +85,12 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Удаление одной книги")
   void deleteBook() {
+    steps.prepareBasicUser();
+    steps.prepareCookieBasicUser();
+    steps.addBook();
     steps.loginBasicProfile();
     steps.openPageProfile();
-
     steps.deleteBookPageProfile();
-
     steps.checkDeleteBooksPageProfile();
 
   }
@@ -89,6 +100,9 @@ public class ProfileTests extends BaseTest {
   @Test
   @DisplayName("Отмена удаление одной книги")
   void cancelDeleteBook() {
+    steps.prepareBasicUser();
+    steps.prepareCookieBasicUser();
+    steps.addBook();
     steps.loginBasicProfile();
     steps.openPageProfile();
     steps.cancelDeleteBookPageProfile();
