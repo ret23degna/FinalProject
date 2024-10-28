@@ -38,7 +38,7 @@ public class Singleton {
     cookies.put("userID", new Cookie("userID", userId));
   }
 
-  private void getISBN() {
+  private void getIsbn() {
     Map<String, ?> bookMap = getBooks().getResponse()
         .path("books.find { it.title == '" + "Git Pocket Guide" + "' }");
     IsbnModel isbn = new BookTemplates().formIsbn(bookMap);
@@ -49,7 +49,7 @@ public class Singleton {
     setToken();
     getUserId();
     getCookie();
-    getISBN();
+    getIsbn();
   }
 
   public static Singleton getInstance() {

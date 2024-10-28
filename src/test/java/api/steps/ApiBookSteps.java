@@ -13,17 +13,17 @@ public class ApiBookSteps {
   private final String isbn = Singleton.getInstance().isbnArray.get(0).getIsbn();
 
   @Step("Предварительный шаг. Удалить все книги у пользователя")
-  public RestWrapper predDeleteBooks() {
-    return new RestWrapper()
+  public void predDeleteBooks() {
+    new RestWrapper()
         .delete(BOOK_STOREBOOKS_ENDPOINT + "?UserId=" + Singleton.getInstance().userId, "",
             Singleton.getInstance().token);
   }
 
   @Step("Предварительный шаг.Добавить книгу пользователю")
-  public RestWrapper predPostBooks() {
+  public void predPostBooks() {
     BookAddPostRequestModel addBook = new BookTemplates().formAddBook(
         Singleton.getInstance().userId, Singleton.getInstance().isbnArray);
-    return new RestWrapper()
+    new RestWrapper()
         .post(BOOK_STOREBOOKS_ENDPOINT, addBook, Singleton.getInstance().token);
   }
 

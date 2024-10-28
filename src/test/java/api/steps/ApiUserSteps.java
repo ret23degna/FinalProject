@@ -28,9 +28,9 @@ public class ApiUserSteps {
   }
 
   @Step("Предварительный шаг. Создать нового пользователя")
-  public RestWrapper predNewUser() {
+  public void predNewUser() {
     newUser = new AccountTemplates().getNewUser();
-    return new RestWrapper()
+     new RestWrapper()
         .post(ACCOUNT_USER_ENDPOINT, newUser, null);
   }
 
