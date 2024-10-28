@@ -9,6 +9,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Epic("API")
@@ -17,16 +18,19 @@ public class ApiBookTests extends BaseTest {
   ApiBookSteps steps = new ApiBookSteps();
 
   @Severity(SeverityLevel.CRITICAL)
+  @Tag("API")
   @Feature("ApiBookTests")
   @Test
   @DisplayName("Добавление книги пользователю")
   void successfulPostBooks() {
+    steps.predDeleteBooks();
     steps.postBooks()
         .shouldHaveStatusCode(201)
         .shouldHaveJsonPath("books[0].isbn", containsString("9781449325862"));
   }
 
   @Severity(SeverityLevel.CRITICAL)
+  @Tag("API")
   @Feature("ApiBookTests")
   @Test
   @DisplayName("Получение списка книг")
@@ -36,6 +40,7 @@ public class ApiBookTests extends BaseTest {
   }
 
   @Severity(SeverityLevel.CRITICAL)
+  @Tag("API")
   @Feature("ApiBookTests")
   @Test
   @DisplayName("Получение книги")
@@ -52,28 +57,37 @@ public class ApiBookTests extends BaseTest {
   }
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("API")
   @Feature("ApiBookTests")
   @Test
   @DisplayName("Удаление всех книг у пользователя")
   void successfulDeleteBooks() {
+    steps.predDeleteBooks();
+    steps.predPostBooks();
     steps.deleteBooks()
         .shouldHaveStatusCode(204);
   }
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("API")
   @Feature("ApiBookTests")
   @Test
   @DisplayName("Удаление одной книги у пользователя")
   void successfulDeleteBook() {
+    steps.predDeleteBooks();
+    steps.predPostBooks();
     steps.deleteBook()
         .shouldHaveStatusCode(204);
   }
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("API")
   @Feature("ApiBookTests")
   @Test
   @DisplayName("Обновление данных о книге пользователя")
   void successfulPutBooks() {
+    steps.predDeleteBooks();
+    steps.predPostBooks();
     steps.putBooks()
         .shouldHaveStatusCode(200)
         .shouldHaveJsonPath("userId", containsString("7a854906-dfc3-4b4e-b527-1f8ba0c8070c"))

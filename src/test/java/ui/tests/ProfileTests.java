@@ -6,6 +6,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import helpers.utils.BaseTest;
 import ui.steps.ProfileSteps;
@@ -16,43 +17,47 @@ public class ProfileTests extends BaseTest {
   ProfileSteps steps = new ProfileSteps();
 
   @Severity(SeverityLevel.CRITICAL)
+  @Tag("UI")
   @Feature("ProfileTests")
   @Test
   @DisplayName("Выход из профиля")
   void logOutBookStore() {
     steps.prepareCookieBasicUser();
-    steps.loginBasicProfile();
+    steps.loginProfile();
     steps.openPageProfile();
     steps.clickButtonLogOutPageProfile();
     steps.checkLogOutPageProfile();
   }
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("UI")
   @Feature("ProfileTests")
   @Test
   @DisplayName("Удаление аккаунта")
   void deleteAccountBookStore() {
     steps.addNewUser();
     steps.prepareCookieNewUser();
-    steps.loginNewProfile();
+    steps.loginProfile();
     steps.openPageProfile();
     steps.deleteAccountPageProfile();
     steps.checkDeleteAccountPageProfile();
   }
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("UI")
   @Feature("ProfileTests")
   @Test
   @DisplayName("Отмена удаление аккаунта")
   void cancelDeleteAccountBookStore() {
     steps.prepareCookieBasicUser();
-    steps.loginBasicProfile();
+    steps.loginProfile();
     steps.openPageProfile();
     steps.cancelDeleteAccountPageProfile();
     steps.checkCancelPageProfile();
   }
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("UI")
   @Feature("ProfileTests")
   @Test
   @DisplayName("Удаление всех книг")
@@ -60,13 +65,14 @@ public class ProfileTests extends BaseTest {
     steps.prepareBasicUser();
     steps.prepareCookieBasicUser();
     steps.addBook();
-    steps.loginBasicProfile();
+    steps.loginProfile();
     steps.openPageProfile();
     steps.deleteAllBooksPageProfile();
     steps.checkDeleteBooksPageProfile();
   }
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("UI")
   @Feature("ProfileTests")
   @Test
   @DisplayName("Отмена удаления всех книг")
@@ -74,13 +80,14 @@ public class ProfileTests extends BaseTest {
     steps.prepareBasicUser();
     steps.prepareCookieBasicUser();
     steps.addBook();
-    steps.loginBasicProfile();
+    steps.loginProfile();
     steps.openPageProfile();
     steps.cancelDeleteAllBooksPageProfile();
     steps.checkCancelPageProfile();
   }
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("UI")
   @Feature("ProfileTests")
   @Test
   @DisplayName("Удаление одной книги")
@@ -88,7 +95,7 @@ public class ProfileTests extends BaseTest {
     steps.prepareBasicUser();
     steps.prepareCookieBasicUser();
     steps.addBook();
-    steps.loginBasicProfile();
+    steps.loginProfile();
     steps.openPageProfile();
     steps.deleteBookPageProfile();
     steps.checkDeleteBooksPageProfile();
@@ -96,6 +103,7 @@ public class ProfileTests extends BaseTest {
   }
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("UI")
   @Feature("ProfileTests")
   @Test
   @DisplayName("Отмена удаление одной книги")
@@ -103,7 +111,7 @@ public class ProfileTests extends BaseTest {
     steps.prepareBasicUser();
     steps.prepareCookieBasicUser();
     steps.addBook();
-    steps.loginBasicProfile();
+    steps.loginProfile();
     steps.openPageProfile();
     steps.cancelDeleteBookPageProfile();
     steps.checkCancelPageProfile();

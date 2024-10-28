@@ -5,6 +5,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import helpers.utils.BaseTest;
 import ui.steps.RegisterUserSteps;
@@ -15,6 +16,7 @@ public class RegisterUserTests extends BaseTest {
   RegisterUserSteps steps = new RegisterUserSteps();
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("UI")
   @Feature("RegisterUserTests")
   @Test
   @DisplayName("Ошибка регистрации пользователя.Не пройдена капча")

@@ -1,6 +1,5 @@
 package ui.steps;
 
-import static api.steps.ApiSingleton.getCookie;
 import static com.codeborne.selenide.Condition.hidden;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.open;
@@ -9,10 +8,12 @@ import static helpers.config.Endpoints.PAGE_PROFILE;
 
 import api.steps.ApiBookSteps;
 import api.steps.ApiUserSteps;
+import api.steps.Singleton;
 import api.templates.AccountTemplates;
 import com.codeborne.selenide.Selenide;
 import helpers.models.AccountNewUserRequestModel;
 import io.qameta.allure.Step;
+import java.util.HashMap;
 import java.util.Map;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.Cookie;
@@ -20,7 +21,8 @@ import ui.pages.LocatorsLoginUser;
 import ui.pages.LocatorsProfile;
 
 public class ProfileSteps {
-  private AccountNewUserRequestModel user= new AccountTemplates().getBasicUser(), newUser;
+
+  private AccountNewUserRequestModel user = new AccountTemplates().getBasicUser(), newUser;
   private ApiUserSteps apiUser;
   private ApiBookSteps apiBook;
   private LocatorsProfile locatorProfile;
@@ -34,7 +36,6 @@ public class ProfileSteps {
     this.locatorLoginUser = new LocatorsLoginUser();
   }
 
-
   private void acceptAlert() {
     Alert alert = Selenide.switchTo().alert();
     alert.accept();
@@ -42,36 +43,38 @@ public class ProfileSteps {
 
   @Step("Предварительный шаг. Добавить книгу пользователю")
   public void addBook() {
-    apiBook.postBooks(user);
+    apiBook.postBooks();
   }
+
   @Step("Предварительный шаг. Создать нового пользователя")
   public void addNewUser() {
     newUser = new AccountTemplates().getNewUser();
     apiUser.newUser(newUser);
   }
+
   @Step("Предварительный шаг. Подготовить основного пользователя")
   public void prepareBasicUser() {
-    apiBook.deleteBooks(user);
+    apiUser.predGetToken();
+    apiUser.predUserId();
+    apiBook.predDeleteBooks();
   }
+
   @Step("Предварительный шаг. Подготовить куки основного пользователя")
   public void prepareCookieBasicUser() {
-   cookie = getCookie();
+    cookie = Singleton.getInstance().cookies;
   }
-  @Step("Предварительный шаг. Подготовить куки основного пользователя")
+
+  @Step("Предварительный шаг. Подготовить куки нового пользователя")
   public void prepareCookieNewUser() {
-  cookie = apiUser.getCookie(newUser);
-  }
-  @Step("Авторизоваться")
-  public void loginBasicProfile() {
-    //UISinglton.getAuto();
-    open("/images/Toolsqa.jpg");
-    for (Map.Entry<String, Cookie> cookieEntry : cookie.entrySet()) {
-      getWebDriver().manage().addCookie(cookieEntry.getValue());
-    }
+    String[] tokenInfo = apiUser.getTokenInfo(newUser);
+    cookie = new HashMap<>();
+    cookie.put("token", new Cookie("token", tokenInfo[0]));
+    cookie.put("expires", new Cookie("expires", tokenInfo[1]));
+    cookie.put("userID", new Cookie("userID", apiUser.getUserId(newUser)));
   }
 
   @Step("Авторизоваться")
-  public void loginNewProfile() {
+  public void loginProfile() {
     open("/images/Toolsqa.jpg");
     for (Map.Entry<String, Cookie> cookieEntry : cookie.entrySet()) {
       getWebDriver().manage().addCookie(cookieEntry.getValue());

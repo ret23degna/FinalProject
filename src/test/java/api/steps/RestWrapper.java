@@ -8,29 +8,27 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import org.hamcrest.Matcher;
 
+
 public class RestWrapper {
 
   private Response response;
-
   public RestWrapper post(String endpoint, Object body,String token) {
     this.response = given()
-        .spec(requestSpecWithAuthorization(token,"post"))
+        .spec(requestSpecWithAuthorization(token,true))
         .body(body)
         .post(endpoint);
     return this;
   }
-
   public RestWrapper get(String endpoint,String token) {
     this.response = given()
-        .spec(requestSpecWithAuthorization(token,"get"))
+        .spec(requestSpecWithAuthorization(token,false))
         .get(endpoint);
     return this;
   }
 
-
   public RestWrapper delete(String endpoint, Object body, String token) {
     this.response = given()
-        .spec(requestSpecWithAuthorization(token,"delete"))
+        .spec(requestSpecWithAuthorization(token,false))
         .body(body)
         .delete(endpoint);
     return this;
@@ -38,7 +36,7 @@ public class RestWrapper {
 
   public RestWrapper put(String endpoint, Object body,String token) {
     this.response = given()
-        .spec(requestSpecWithAuthorization(token,"put"))
+        .spec(requestSpecWithAuthorization(token,false))
         .body(body)
         .put(endpoint);
     return this;

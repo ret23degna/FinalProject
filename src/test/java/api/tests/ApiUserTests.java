@@ -8,6 +8,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import api.steps.ApiUserSteps;
 
@@ -17,10 +18,13 @@ public class ApiUserTests extends BaseTest {
   ApiUserSteps steps = new ApiUserSteps();
 
   @Severity(SeverityLevel.CRITICAL)
+  @Tag("API")
   @Feature("ApiUserTests")
   @Test
   @DisplayName("Получить информацию о пользователе")
   void successfulGetUser() {
+    steps.predGetToken();
+    steps.predUserId();
     steps.getUser()
         .shouldHaveStatusCode(200)
         .shouldHaveJsonPath("userId", containsString("7a854906-dfc3-4b4e-b527-1f8ba0c8070c"))
@@ -28,20 +32,24 @@ public class ApiUserTests extends BaseTest {
   }
 
   @Severity(SeverityLevel.BLOCKER)
+  @Tag("API")
   @Feature("ApiUserTests")
   @Test
   @DisplayName("Авторизация пользователя")
   void successfulAuthorized() {
+    steps.predGetToken();
     steps.authorized()
         .shouldHaveStatusCode(200)
         .responseBodyIsNoJson("true");
   }
 
   @Severity(SeverityLevel.BLOCKER)
+  @Tag("API")
   @Feature("ApiUserTests")
   @Test
   @DisplayName("Генерация токена")
   void successfulGenerateToken() {
+    steps.predNewUser();
     steps.getToken()
         .shouldHaveStatusCode(200)
         .shouldHaveJsonPath("status", containsString("Success"))
@@ -49,6 +57,7 @@ public class ApiUserTests extends BaseTest {
   }
 
   @Severity(SeverityLevel.CRITICAL)
+  @Tag("API")
   @Feature("ApiUserTests")
   @Test
   @DisplayName("Создание нового пользователя")
@@ -59,10 +68,14 @@ public class ApiUserTests extends BaseTest {
 
 
   @Severity(SeverityLevel.NORMAL)
+  @Tag("API")
   @Feature("ApiUserTests")
   @Test
   @DisplayName("Удаление пользователя")
   void successfulDeleteUser() {
+    steps.predNewUser();
+    steps.newGetToken();
+    steps.newGetLogin();
     steps.deleteUser()
         .shouldHaveStatusCode(204);
   }

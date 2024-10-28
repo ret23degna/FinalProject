@@ -5,6 +5,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import helpers.utils.BaseTest;
 import ui.steps.LoginUserSteps;
@@ -15,6 +16,7 @@ public class LoginUserTests extends BaseTest {
   LoginUserSteps steps = new LoginUserSteps();
 
   @Severity(SeverityLevel.BLOCKER)
+  @Tag("UI")
   @Feature("LoginUserTests")
   @Test
   @DisplayName("Успешная авторизация")
@@ -26,6 +28,7 @@ public class LoginUserTests extends BaseTest {
   }
 
   @Severity(SeverityLevel.CRITICAL)
+  @Tag("UI")
   @Feature("LoginUserTests")
   @Test
   @DisplayName("Неуспешная авторизация")

@@ -3,73 +3,75 @@ package api.steps;
 import static helpers.config.Endpoints.BOOK_STOREBOOKS_ENDPOINT;
 import static helpers.config.Endpoints.BOOK_STOREBOOK_ENDPOINT;
 
-import api.templates.AccountTemplates;
 import api.templates.BookTemplates;
-import helpers.models.AccountNewUserRequestModel;
 import helpers.models.BookAddPostRequestModel;
 import helpers.models.BookDeleteRequestModel;
 import io.qameta.allure.Step;
 
-
 public class ApiBookSteps {
-  private final AccountNewUserRequestModel basicUser= new AccountTemplates().getBasicUser();
-  private final String isbn= ApiSingleton.getISBN().get(0).getIsbn();;
 
-  @Step("Добавить книгу пользователю")
-  public void postBooks(AccountNewUserRequestModel user) {
-    BookAddPostRequestModel addBook = new BookTemplates().formAddBook(ApiSingleton.getUserId(), ApiSingleton.getISBN());
-    new RestWrapper()
-        .post(BOOK_STOREBOOKS_ENDPOINT, addBook,ApiSingleton.getToken());
+  private final String isbn = Singleton.getInstance().isbnArray.get(0).getIsbn();
+
+  @Step("Предварительный шаг. Удалить все книги у пользователя")
+  public RestWrapper predDeleteBooks() {
+    return new RestWrapper()
+        .delete(BOOK_STOREBOOKS_ENDPOINT + "?UserId=" + Singleton.getInstance().userId, "",
+            Singleton.getInstance().token);
   }
-  @Step("Удалить все книги у пользователя")
-  public void deleteBooks(AccountNewUserRequestModel user) {
-    new RestWrapper()
-        .delete(BOOK_STOREBOOKS_ENDPOINT + "?UserId=" + ApiSingleton.getUserId(), "",ApiSingleton.getToken());
+
+  @Step("Предварительный шаг.Добавить книгу пользователю")
+  public RestWrapper predPostBooks() {
+    BookAddPostRequestModel addBook = new BookTemplates().formAddBook(
+        Singleton.getInstance().userId, Singleton.getInstance().isbnArray);
+    return new RestWrapper()
+        .post(BOOK_STOREBOOKS_ENDPOINT, addBook, Singleton.getInstance().token);
   }
+
+
 
   @Step("Добавить книгу пользователю")
   public RestWrapper postBooks() {
-    deleteBooks(basicUser);
-    BookAddPostRequestModel addBook = new BookTemplates().formAddBook(ApiSingleton.getUserId(), ApiSingleton.getISBN());
+    BookAddPostRequestModel addBook = new BookTemplates().formAddBook(
+        Singleton.getInstance().userId, Singleton.getInstance().isbnArray);
     return new RestWrapper()
-        .post(BOOK_STOREBOOKS_ENDPOINT, addBook, ApiSingleton.getToken());
+        .post(BOOK_STOREBOOKS_ENDPOINT, addBook, Singleton.getInstance().token);
   }
 
   @Step("Получить список книг")
   public static RestWrapper getBooks() {
     return new RestWrapper()
-        .get(BOOK_STOREBOOKS_ENDPOINT,"");
+        .get(BOOK_STOREBOOKS_ENDPOINT, null);
   }
 
   @Step("Получить книгу")
   public RestWrapper getBook() {
     return new RestWrapper()
-        .get(BOOK_STOREBOOK_ENDPOINT + "?ISBN=" + isbn,"");
+        .get(BOOK_STOREBOOK_ENDPOINT + "?ISBN=" + isbn, null);
   }
 
 
   @Step("Удалить все книги у пользователя")
   public RestWrapper deleteBooks() {
-    postBooks();
     return new RestWrapper()
-        .delete(BOOK_STOREBOOKS_ENDPOINT + "?UserId=" + ApiSingleton.getUserId(),"",ApiSingleton.getToken());
+        .delete(BOOK_STOREBOOKS_ENDPOINT + "?UserId=" + Singleton.getInstance().userId, "",
+            Singleton.getInstance().token);
   }
 
   @Step("Удалить одну книги у пользователя")
   public RestWrapper deleteBook() {
-    postBooks();
-    BookDeleteRequestModel book = new BookTemplates().formChangeBook(isbn, ApiSingleton.getUserId());
+    BookDeleteRequestModel book = new BookTemplates().formChangeBook(isbn,
+        Singleton.getInstance().userId);
     return new RestWrapper()
-        .delete(BOOK_STOREBOOK_ENDPOINT, book, ApiSingleton.getToken());
+        .delete(BOOK_STOREBOOK_ENDPOINT, book, Singleton.getInstance().token);
   }
 
 
   @Step("Обновить данные о книге пользователя")
   public RestWrapper putBooks() {
-    postBooks();
-    BookDeleteRequestModel book = new BookTemplates().formChangeBook("9781449337711", ApiSingleton.getUserId());
+    BookDeleteRequestModel book = new BookTemplates().formChangeBook("9781449337711",
+        Singleton.getInstance().userId);
     return new RestWrapper()
-        .put(BOOK_STOREBOOKS_ENDPOINT + "/" + isbn, book, ApiSingleton.getToken());
+        .put(BOOK_STOREBOOKS_ENDPOINT + "/" + isbn, book, Singleton.getInstance().token);
   }
 
 }
