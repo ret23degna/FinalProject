@@ -13,11 +13,7 @@ import ui.pages.LocatorsRegisterUser;
 
 public class RegisterUserSteps {
 
-  LocatorsRegisterUser locator;
-
-  public RegisterUserSteps() {
-    this.locator = new LocatorsRegisterUser();
-  }
+  LocatorsRegisterUser locator = new LocatorsRegisterUser();
 
   @Step("Открыть страницу регистрации пользователя")
   public void openPageRegisterUser() {
@@ -41,4 +37,5 @@ public class RegisterUserSteps {
   public void checkErrorCaptchaResultPageRegisterUser() {
     locator.labelErrorCaptcha().shouldHave(text("Please verify reCaptcha to register!"));
   }
+
 }

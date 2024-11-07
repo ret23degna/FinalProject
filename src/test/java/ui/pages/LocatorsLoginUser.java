@@ -6,25 +6,24 @@ import com.codeborne.selenide.SelenideElement;
 
 public class LocatorsLoginUser {
 
-
   public SelenideElement userName() {
-    return $("#userName").as("Username");
+    return $("#userName").as("Логин пользователя");
   }
 
   public SelenideElement password() {
-    return $("#password").as("Password");
+    return $("#password").as("Пароль");
   }
 
   public SelenideElement buttonLoginUser() {
-    return $("#login").as("Button login user");
+    return $("#login").as("Кнопка авторизации");
   }
 
   public SelenideElement invalidLabel() {
-    return $("#name").as("Invalid lable");
+    return $("#name").as("Текст ошибки авторизации");
   }
 
   public SelenideElement loginLabel() {
-    return $("#userForm").$("h5").as("Login lable");
+    return $("#userForm").$("h5").as("Текст авторизации пользователя");
   }
 
 }

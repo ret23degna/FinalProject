@@ -27,4 +27,5 @@ public class BookTemplates {
     isbn.setIsbn(bookMap.get("isbn").toString());
     return isbn;
   }
+
 }

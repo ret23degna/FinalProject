@@ -23,22 +23,58 @@ import ui.pages.LocatorsProfile;
 public class ProfileSteps {
 
   private AccountNewUserRequestModel user = new AccountTemplates().getBasicUser(), newUser;
+
   private ApiUserSteps apiUser;
+
   private ApiBookSteps apiBook;
-  private LocatorsProfile locatorProfile;
-  private LocatorsLoginUser locatorLoginUser;
+
+  private LocatorsProfile locatorProfile = new LocatorsProfile();
+
+  private LocatorsLoginUser locatorLoginUser = new LocatorsLoginUser();
+
   private Map<String, Cookie> cookie;
+
+  private void preStepCookieBasicUser() {
+    cookie = Singleton.getInstance().cookies;
+  }
+
+  private void preStepCookieNewUser() {
+    Map<String, String> tokenInfo = apiUser.getTokenInfo(newUser);
+    cookie = new HashMap<>();
+    cookie.put("token", new Cookie("token", tokenInfo.get("token")));
+    cookie.put("expires", new Cookie("expires", tokenInfo.get("expires")));
+    cookie.put("userID", new Cookie("userID", apiUser.getUserId(newUser)));
+  }
 
   public ProfileSteps() {
     this.apiUser = new ApiUserSteps();
     this.apiBook = new ApiBookSteps();
-    this.locatorProfile = new LocatorsProfile();
-    this.locatorLoginUser = new LocatorsLoginUser();
   }
 
   private void acceptAlert() {
     Alert alert = Selenide.switchTo().alert();
     alert.accept();
+  }
+
+  @Step("Предварительный шаги. Подготовка нового пользователя")
+  public void preStepNew() {
+    addNewUser();
+    preStepCookie(true);
+    loginProfile();
+  }
+
+  @Step("Предварительный шаги. Подготовка основного пользователя")
+  public void preStepBasic() {
+    preStepBasicUser();
+    preStepCookie(false);
+    addBook();
+    loginProfile();
+  }
+
+  @Step("Предварительный шаги.")
+  public void preStep() {
+    preStepCookieBasicUser();
+    loginProfile();
   }
 
   @Step("Предварительный шаг. Добавить книгу пользователю")
@@ -53,24 +89,19 @@ public class ProfileSteps {
   }
 
   @Step("Предварительный шаг. Подготовить основного пользователя")
-  public void prepareBasicUser() {
-    apiUser.predGetToken();
-    apiUser.predUserId();
-    apiBook.predDeleteBooks();
+  public void preStepBasicUser() {
+    apiUser.preStepGetToken();
+    apiUser.preStepUserId();
+    apiBook.preStepDeleteBooks();
   }
 
-  @Step("Предварительный шаг. Подготовить куки основного пользователя")
-  public void prepareCookieBasicUser() {
-    cookie = Singleton.getInstance().cookies;
-  }
-
-  @Step("Предварительный шаг. Подготовить куки нового пользователя")
-  public void prepareCookieNewUser() {
-    String[] tokenInfo = apiUser.getTokenInfo(newUser);
-    cookie = new HashMap<>();
-    cookie.put("token", new Cookie("token", tokenInfo[0]));
-    cookie.put("expires", new Cookie("expires", tokenInfo[1]));
-    cookie.put("userID", new Cookie("userID", apiUser.getUserId(newUser)));
+  @Step("Предварительный шаг. Подготовить куки пользователя")
+  public void preStepCookie(boolean newUser) {
+    if (newUser == true) {
+      preStepCookieNewUser();
+    } else {
+      preStepCookieBasicUser();
+    }
   }
 
   @Step("Авторизоваться")
@@ -102,7 +133,6 @@ public class ProfileSteps {
     locatorProfile.buttonDeleteAccount().click();
     locatorProfile.popupButtonCancel().click();
   }
-
 
   @Step("Проверить выход из профиля")
   public void checkLogOutPageProfile() {
@@ -144,9 +174,10 @@ public class ProfileSteps {
     locatorProfile.popupButtonOk().click();
   }
 
-  @Step("Отменить удалени книг у пользователя")
+  @Step("Отменить удаление книг у пользователя")
   public void cancelDeleteBookPageProfile() {
     locatorProfile.buttonDeleteBook().click();
     locatorProfile.popupButtonCancel().click();
   }
+
 }

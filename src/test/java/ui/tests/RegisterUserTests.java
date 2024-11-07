@@ -26,4 +26,5 @@ public class RegisterUserTests extends BaseTest {
     steps.clickButtonRegisterPageRegisterUser();
     steps.checkErrorCaptchaResultPageRegisterUser();
   }
+
 }

@@ -7,5 +7,4 @@ public class BookDeleteRequestModel {
 
   private String isbn, userId;
 
-
 }

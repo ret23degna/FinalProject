@@ -15,8 +15,11 @@ import org.openqa.selenium.Cookie;
 public class Singleton {
 
   public String token, expires, userId;
+
   public Map<String, Cookie> cookies;
+
   public List<IsbnModel> isbnArray;
+
   private static Singleton instance;
 
   private void setToken() {
@@ -58,4 +61,5 @@ public class Singleton {
     }
     return instance;
   }
+
 }

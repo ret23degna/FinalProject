@@ -29,9 +29,4 @@ public interface Configurations extends Config {
   @DefaultValue("22!!QQww")
   String getPassword();
 
-  @Key("identifier")
-  @DefaultValue("")
-  String getIdentifier();
-
-
 }

@@ -7,26 +7,27 @@ import com.codeborne.selenide.SelenideElement;
 public class LocatorsRegisterUser {
 
   public SelenideElement firstName() {
-    return $("#firstname").as("Firstname");
+    return $("#firstname").as("Имя пользователя");
   }
 
   public SelenideElement lastName() {
-    return $("#lastname").as("Lastname");
+    return $("#lastname").as("Фамилия пользователя");
   }
 
   public SelenideElement userName() {
-    return $("#userName").as("Username");
+    return $("#userName").as("Логин пользователя");
   }
 
   public SelenideElement password() {
-    return $("#password").as("Password");
+    return $("#password").as("Пароль");
   }
 
   public SelenideElement labelErrorCaptcha() {
-    return $("#name").as("Label error captcha");
+    return $("#name").as("Текст ошибки регистрации");
   }
 
   public SelenideElement buttonRegisterUser() {
-    return $("#register").as("Button register user");
+    return $("#register").as("Кнопка Регистрации пользователя");
   }
+
 }

@@ -23,7 +23,7 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Добавление книги пользователю")
   void successfulPostBooks() {
-    steps.predDeleteBooks();
+    steps.preStepDeleteBooks();
     steps.postBooks()
         .shouldHaveStatusCode(201)
         .shouldHaveJsonPath("books[0].isbn", containsString("9781449325862"));
@@ -53,7 +53,6 @@ public class ApiBookTests extends BaseTest {
         .shouldHaveJsonPath("author", containsString("Richard E. Silverman"))
         .shouldHaveJsonPath("publish_date", containsString("2020-06-04T08:48:39.000Z"))
         .shouldHaveJsonPath("publisher", containsString("O'Reilly Media"));
-
   }
 
   @Severity(SeverityLevel.NORMAL)
@@ -62,8 +61,7 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Удаление всех книг у пользователя")
   void successfulDeleteBooks() {
-    steps.predDeleteBooks();
-    steps.predPostBooks();
+    steps.preStepSuccessfulDeleteBook();
     steps.deleteBooks()
         .shouldHaveStatusCode(204);
   }
@@ -74,8 +72,7 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Удаление одной книги у пользователя")
   void successfulDeleteBook() {
-    steps.predDeleteBooks();
-    steps.predPostBooks();
+    steps.preStepSuccessfulDeleteBook();
     steps.deleteBook()
         .shouldHaveStatusCode(204);
   }
@@ -86,11 +83,11 @@ public class ApiBookTests extends BaseTest {
   @Test
   @DisplayName("Обновление данных о книге пользователя")
   void successfulPutBooks() {
-    steps.predDeleteBooks();
-    steps.predPostBooks();
+    steps.preStepSuccessfulPutBook();
     steps.putBooks()
         .shouldHaveStatusCode(200)
         .shouldHaveJsonPath("userId", containsString("7a854906-dfc3-4b4e-b527-1f8ba0c8070c"))
         .shouldHaveJsonPath("username", containsString("Kakabyaka_48"));
   }
+
 }

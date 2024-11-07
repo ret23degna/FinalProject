@@ -1,5 +1,10 @@
 package ui.tests;
 
+import static helpers.config.RandomUtils.login;
+import static helpers.config.RandomUtils.password;
+
+import api.templates.AccountTemplates;
+import helpers.models.AccountNewUserRequestModel;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
@@ -13,6 +18,8 @@ import ui.steps.LoginUserSteps;
 @Epic("UI")
 public class LoginUserTests extends BaseTest {
 
+  private AccountNewUserRequestModel user = new AccountTemplates().getBasicUser();
+
   LoginUserSteps steps = new LoginUserSteps();
 
   @Severity(SeverityLevel.BLOCKER)
@@ -22,7 +29,7 @@ public class LoginUserTests extends BaseTest {
   @DisplayName("Успешная авторизация")
   void successLoginBookStore() {
     steps.openPageLoginUser();
-    steps.enterDataPageLoginUser();
+    steps.enterDataPageLoginUser(user.getUserName(), user.getPassword());
     steps.clickButtonPageLoginUser();
     steps.checkAuthorizedPageLoginUser();
   }
@@ -34,7 +41,7 @@ public class LoginUserTests extends BaseTest {
   @DisplayName("Неуспешная авторизация")
   void errorLoginBookStore() {
     steps.openPageLoginUser();
-    steps.enterDataRandomPageLoginUser();
+    steps.enterDataPageLoginUser(login(), password());
     steps.clickButtonPageLoginUser();
     steps.checkNoAuthorizedPageLoginUser();
   }

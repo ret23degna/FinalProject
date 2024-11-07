@@ -8,6 +8,7 @@ import java.util.List;
 public class BookAddPostRequestModel {
 
   private String userId;
+
   private List<IsbnModel> collectionOfIsbns;
 
 }

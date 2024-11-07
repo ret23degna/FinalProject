@@ -23,8 +23,7 @@ public class ApiUserTests extends BaseTest {
   @Test
   @DisplayName("Получить информацию о пользователе")
   void successfulGetUser() {
-    steps.predGetToken();
-    steps.predUserId();
+    steps.preStepSuccessfulGetUser();
     steps.getUser()
         .shouldHaveStatusCode(200)
         .shouldHaveJsonPath("userId", containsString("7a854906-dfc3-4b4e-b527-1f8ba0c8070c"))
@@ -37,7 +36,7 @@ public class ApiUserTests extends BaseTest {
   @Test
   @DisplayName("Авторизация пользователя")
   void successfulAuthorized() {
-    steps.predGetToken();
+    steps.preStepGetToken();
     steps.authorized()
         .shouldHaveStatusCode(200)
         .responseBodyIsNoJson("true");
@@ -49,7 +48,7 @@ public class ApiUserTests extends BaseTest {
   @Test
   @DisplayName("Генерация токена")
   void successfulGenerateToken() {
-    steps.predNewUser();
+    steps.preStepNewUser();
     steps.getToken()
         .shouldHaveStatusCode(200)
         .shouldHaveJsonPath("status", containsString("Success"))
@@ -66,17 +65,15 @@ public class ApiUserTests extends BaseTest {
         .shouldHaveStatusCode(201);
   }
 
-
   @Severity(SeverityLevel.NORMAL)
   @Tag("API")
   @Feature("ApiUserTests")
   @Test
   @DisplayName("Удаление пользователя")
   void successfulDeleteUser() {
-    steps.predNewUser();
-    steps.newGetToken();
-    steps.newGetLogin();
+    steps.preStepSuccessfulDeleteUser();
     steps.deleteUser()
         .shouldHaveStatusCode(204);
   }
+
 }

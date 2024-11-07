@@ -6,7 +6,6 @@ import static helpers.utils.BaseTest.config;
 
 import helpers.models.AccountNewUserRequestModel;
 
-
 public class AccountTemplates {
 
   public AccountNewUserRequestModel getNewUser() {
