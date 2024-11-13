@@ -1,18 +1,18 @@
 package api.specs;
 
-import static helpers.utils.BaseTest.authoriz.oauth2;
-import static helpers.utils.BaseTest.authoriz.unknown;
+
 import static helpers.utils.BaseTest.config;
 import static io.restassured.RestAssured.with;
 import static io.restassured.http.ContentType.JSON;
 
-import helpers.utils.BaseTest.authoriz;
+import api.steps.Authoriz;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import java.io.PrintStream;
+import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.io.IoBuilder;
@@ -35,17 +35,15 @@ public class AccountAndBookSpec {
       .contentType(JSON)
       .baseUri(config.getBaseUrl());
 
-  public static RequestSpecification requestSpecWithAuthorization(String token, String[] parameter,
-      authoriz flag) {
-    if (parameter != null) {
-      requestSpec.queryParam(parameter[0], parameter[1]);
-    }
-    if (!flag.equals(unknown)) {
-      if (flag.equals(oauth2)) {
+  public static RequestSpecification requestSpecWithAuthorization(String token,
+      Authoriz authToken) {
+    switch (authToken) {
+      case oauth2:
         requestSpec.auth().oauth2(token);
-      } else {
+        break;
+      case bearer:
         requestSpec.header("Authorization", "Bearer " + token);
-      }
+        break;
     }
     return requestSpec;
   }

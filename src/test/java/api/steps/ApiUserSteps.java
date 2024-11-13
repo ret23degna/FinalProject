@@ -6,7 +6,6 @@ import static helpers.config.Endpoints.ACCOUNT_TOKEN_ENDPOINT;
 import static helpers.config.Endpoints.ACCOUNT_USER_ENDPOINT;
 
 import api.templates.AccountTemplates;
-import helpers.utils.BaseTest.authoriz;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import helpers.models.AccountNewUserRequestModel;
@@ -20,6 +19,7 @@ public class ApiUserSteps {
   private AccountNewUserRequestModel newUser;
 
   private String token, userId, newToken, newUserId;
+
 
   public Map<String, String> getTokenInfo(AccountNewUserRequestModel user) {
     Response response = getToken(user).getResponse();
@@ -52,25 +52,25 @@ public class ApiUserSteps {
   public void preStepNewUser() {
     newUser = new AccountTemplates().getNewUser();
     new RestWrapper()
-        .post(ACCOUNT_USER_ENDPOINT, null, newUser, null, authoriz.unknown);
+        .post(ACCOUNT_USER_ENDPOINT, null, newUser, null, Authoriz.unknown);
   }
 
-  @Step("предварительный шаг. Генерация UserId для основного пользователя")
+  @Step("Предварительный шаг. Генерация UserId для основного пользователя")
   public void preStepUserId() {
     userId = Singleton.getInstance().userId;
   }
 
-  @Step("предварительный шаг. Генерировать токен для основного пользователя")
+  @Step("Предварительный шаг. Генерировать токен для основного пользователя")
   public void preStepGetToken() {
     token = Singleton.getInstance().token;
   }
 
-  @Step("предварительный шаг.Залогироваться для нового пользователя")
+  @Step("Предварительный шаг.Залогироваться для нового пользователя")
   public void newGetLogin() {
     newUserId = getLogin(newUser).getResponse().path("userId");
   }
 
-  @Step("предварительный шаг. Генерировать токен для нового пользователя")
+  @Step("Предварительный шаг. Генерировать токен для нового пользователя")
   public void newGetToken() {
     newToken = getToken(newUser).getResponse().path("token");
   }
@@ -78,50 +78,50 @@ public class ApiUserSteps {
   @Step("Залогироваться")
   public RestWrapper getLogin(AccountNewUserRequestModel user) {
     return new RestWrapper()
-        .post(ACCOUNT_LOGIN_ENDPOINT, null, user, null, authoriz.unknown);
+        .post(ACCOUNT_LOGIN_ENDPOINT, null, user, null, Authoriz.unknown);
   }
 
   @Step("Создать нового пользователя")
   public void newUser(AccountNewUserRequestModel user) {
     new RestWrapper()
-        .post(ACCOUNT_USER_ENDPOINT, null, user, null, authoriz.unknown);
+        .post(ACCOUNT_USER_ENDPOINT, null, user, null, Authoriz.unknown);
   }
 
   @Step("Генерировать токен")
   public RestWrapper getToken(AccountNewUserRequestModel user) {
     return new RestWrapper()
-        .post(ACCOUNT_TOKEN_ENDPOINT, null, user, null, authoriz.unknown);
+        .post(ACCOUNT_TOKEN_ENDPOINT, null, user, null, Authoriz.unknown);
   }
 
   @Step("Создать нового пользователя")
   public RestWrapper newUser() {
     AccountNewUserRequestModel newUser = new AccountTemplates().getNewUser();
     return new RestWrapper()
-        .post(ACCOUNT_USER_ENDPOINT, null, newUser, null, authoriz.unknown);
+        .post(ACCOUNT_USER_ENDPOINT, null, newUser, null, Authoriz.unknown);
   }
 
   @Step("Авторизовать пользователя")
   public RestWrapper authorized() {
     return new RestWrapper()
-        .post(ACCOUNT_AUTHORIZED_ENDPOINT, null, basicUser, token, authoriz.oauth2);
+        .post(ACCOUNT_AUTHORIZED_ENDPOINT, null, basicUser, token, Authoriz.oauth2);
   }
 
   @Step("Удалить пользователя")
   public RestWrapper deleteUser() {
     return new RestWrapper()
-        .delete(ACCOUNT_USER_ENDPOINT + "/" + newUserId, null, "", newToken, authoriz.bearer);
+        .delete(ACCOUNT_USER_ENDPOINT + "/" + newUserId, null, "", newToken, Authoriz.bearer);
   }
 
   @Step("Получить информацию о пользователе")
   public RestWrapper getUser() {
     return new RestWrapper()
-        .get(ACCOUNT_USER_ENDPOINT + "/" + userId, null, token, authoriz.bearer);
+        .get(ACCOUNT_USER_ENDPOINT + "/" + userId, null, token, Authoriz.bearer);
   }
 
   @Step("Генерировать токен")
   public RestWrapper getToken() {
     return new RestWrapper()
-        .post(ACCOUNT_TOKEN_ENDPOINT, null, newUser, null, authoriz.unknown);
+        .post(ACCOUNT_TOKEN_ENDPOINT, null, newUser, null, Authoriz.unknown);
   }
 
 }

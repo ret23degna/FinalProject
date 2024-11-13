@@ -71,7 +71,7 @@ public class ProfileSteps {
     loginProfile();
   }
 
-  @Step("Предварительный шаги.")
+  @Step("Предварительный шаги. Подготовка основного пользователя")
   public void preStep() {
     preStepCookieBasicUser();
     loginProfile();

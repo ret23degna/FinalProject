@@ -12,11 +12,6 @@ public class BaseTest {
   public final static Configurations config = ConfigFactory.create(Configurations.class,
       System.getProperties());
 
-  public enum authoriz {
-    unknown, oauth2, bearer
-
-  }
-
   @BeforeAll
   public static void BaseEach() {
     Configuration.pageLoadStrategy = config.getPageLoadStrategy();
