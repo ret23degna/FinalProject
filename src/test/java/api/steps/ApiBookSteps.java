@@ -4,6 +4,7 @@ import static helpers.config.Endpoints.BOOK_STOREBOOKS_ENDPOINT;
 import static helpers.config.Endpoints.BOOK_STOREBOOK_ENDPOINT;
 
 import api.templates.BookTemplates;
+import helpers.config.Authorization;
 import helpers.models.BookAddPostRequestModel;
 import helpers.models.BookDeleteRequestModel;
 import io.qameta.allure.Step;
@@ -15,6 +16,7 @@ public class ApiBookSteps {
   private final String isbn = Singleton.getInstance().isbnArray.get(0).getIsbn();
 
   private String newIsbn;
+
 
   private Map<String, String> parametrMap(String[]... parametrs) {
     Map<String, String> parametrsMap = new HashMap<>();
@@ -42,7 +44,7 @@ public class ApiBookSteps {
     String[] isbnArray = {"UserId", Singleton.getInstance().userId};
     new RestWrapper()
         .delete(BOOK_STOREBOOKS_ENDPOINT, parametrMap(isbnArray), "",
-            Singleton.getInstance().token, Authoriz.bearer);
+            Singleton.getInstance().token, Authorization.BEARER);
   }
 
   @Step("Предварительный шаг.Добавить книгу пользователю")
@@ -50,8 +52,8 @@ public class ApiBookSteps {
     BookAddPostRequestModel addBook = new BookTemplates().formAddBook(
         Singleton.getInstance().userId, Singleton.getInstance().isbnArray);
     new RestWrapper()
-        .post(BOOK_STOREBOOKS_ENDPOINT, null, addBook, Singleton.getInstance().token,
-            Authoriz.oauth2);
+        .post(BOOK_STOREBOOKS_ENDPOINT,  new HashMap<>(), addBook, Singleton.getInstance().token,
+            Authorization.OAUTH_2);
   }
 
   @Step("Предварительный шаг.Получить книгу для обновления")
@@ -66,21 +68,21 @@ public class ApiBookSteps {
     BookAddPostRequestModel addBook = new BookTemplates().formAddBook(
         Singleton.getInstance().userId, Singleton.getInstance().isbnArray);
     return new RestWrapper()
-        .post(BOOK_STOREBOOKS_ENDPOINT, null, addBook, Singleton.getInstance().token,
-            Authoriz.oauth2);
+        .post(BOOK_STOREBOOKS_ENDPOINT,  new HashMap<>(), addBook, Singleton.getInstance().token,
+            Authorization.OAUTH_2);
   }
 
   @Step("Получить список книг")
   public static RestWrapper getBooks() {
     return new RestWrapper()
-        .get(BOOK_STOREBOOKS_ENDPOINT, null, null, Authoriz.unknown);
+        .get(BOOK_STOREBOOKS_ENDPOINT,  new HashMap<>(), null, Authorization.UNKNOWN);
   }
 
   @Step("Получить книгу")
   public RestWrapper getBook() {
     String[] isbnArray = {"ISBN", isbn};
     return new RestWrapper()
-        .get(BOOK_STOREBOOK_ENDPOINT, parametrMap(isbnArray), null, Authoriz.unknown);
+        .get(BOOK_STOREBOOK_ENDPOINT, parametrMap(isbnArray), null, Authorization.UNKNOWN);
   }
 
   @Step("Удалить все книги у пользователя")
@@ -88,7 +90,7 @@ public class ApiBookSteps {
     String[] isbnArray = {"UserId", Singleton.getInstance().userId};
     return new RestWrapper()
         .delete(BOOK_STOREBOOKS_ENDPOINT, parametrMap(isbnArray), "",
-            Singleton.getInstance().token, Authoriz.bearer);
+            Singleton.getInstance().token, Authorization.BEARER);
   }
 
   @Step("Удалить одну книги у пользователя")
@@ -96,8 +98,8 @@ public class ApiBookSteps {
     BookDeleteRequestModel book = new BookTemplates().formChangeBook(isbn,
         Singleton.getInstance().userId);
     return new RestWrapper()
-        .delete(BOOK_STOREBOOK_ENDPOINT, null, book, Singleton.getInstance().token,
-            Authoriz.bearer);
+        .delete(BOOK_STOREBOOK_ENDPOINT, new HashMap<>(), book, Singleton.getInstance().token,
+            Authorization.BEARER);
   }
 
   @Step("Обновить данные о книге пользователя")
@@ -105,7 +107,7 @@ public class ApiBookSteps {
     BookDeleteRequestModel book = new BookTemplates().formChangeBook(newIsbn,
         Singleton.getInstance().userId);
     return new RestWrapper()
-        .put(BOOK_STOREBOOKS_ENDPOINT + "/" + isbn, null, book, Singleton.getInstance().token,
-            Authoriz.bearer);
+        .put(BOOK_STOREBOOKS_ENDPOINT + "/" + isbn,  new HashMap<>(), book, Singleton.getInstance().token,
+            Authorization.BEARER);
   }
 }

@@ -4,9 +4,9 @@ import static api.specs.AccountAndBookSpec.requestSpecWithAuthorization;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
+import helpers.config.Authorization;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import java.util.Map;
 import org.hamcrest.Matcher;
 
@@ -15,58 +15,40 @@ public class RestWrapper {
   private Response response;
 
   public RestWrapper post(String endpoint, Map<String, String> parameter, Object body, String token,
-      Authoriz authToken) {
-    RequestSpecification requestSpec = given()
+      Authorization authToken) {
+    this.response  = given()
         .spec(requestSpecWithAuthorization(token, authToken))
-        .body(body);
-    if (parameter != null && !parameter.isEmpty()) {
-      for (Map.Entry<String, String> value : parameter.entrySet()) {
-        requestSpec.queryParam(value.getKey(), value.getValue());
-      }
-    }
-    this.response = requestSpec.post(endpoint);
+        .body(body)
+        .queryParams(parameter)
+        .post(endpoint);
     return this;
   }
 
-  public RestWrapper get(String endpoint, Map<String, String> parameter, String token,
-      Authoriz authToken) {
-    RequestSpecification requestSpec = given()
-        .spec(requestSpecWithAuthorization(token, authToken));
-    if (parameter != null && !parameter.isEmpty()) {
-      for (Map.Entry<String, String> value : parameter.entrySet()) {
-        requestSpec.queryParam(value.getKey(), value.getValue());
-      }
-    }
-    this.response = requestSpec.get(endpoint);
+  public RestWrapper get(String endpoint, Map<String, String> parameter, String token, Authorization authToken) {
+    this.response  = given()
+        .spec(requestSpecWithAuthorization(token, authToken))
+        .queryParams(parameter)
+        .get(endpoint);
     return this;
   }
 
-  public RestWrapper delete(String endpoint, Map<String, String> parameter, Object body,
-      String token,
-      Authoriz authToken) {
-    RequestSpecification requestSpec = given()
+  public RestWrapper delete(String endpoint, Map<String, String> parameter, Object body, String token,
+      Authorization authToken) {
+    this.response  = given()
         .spec(requestSpecWithAuthorization(token, authToken))
-        .body(body);
-    if (parameter != null && !parameter.isEmpty()) {
-      for (Map.Entry<String, String> value : parameter.entrySet()) {
-        requestSpec.queryParam(value.getKey(), value.getValue());
-      }
-    }
-    this.response = requestSpec.delete(endpoint);
+        .body(body)
+        .queryParams(parameter)
+        .delete(endpoint);
     return this;
   }
 
   public RestWrapper put(String endpoint, Map<String, String> parameter, Object body, String token,
-      Authoriz authToken) {
-    RequestSpecification requestSpec = given()
+      Authorization authToken) {
+    this.response  = given()
         .spec(requestSpecWithAuthorization(token, authToken))
-        .body(body);
-    if (parameter != null && !parameter.isEmpty()) {
-      for (Map.Entry<String, String> value : parameter.entrySet()) {
-        requestSpec.queryParam(value.getKey(), value.getValue());
-      }
-    }
-    this.response = requestSpec.put(endpoint);
+        .body(body)
+        .queryParams(parameter)
+        .put(endpoint);
     return this;
   }
 

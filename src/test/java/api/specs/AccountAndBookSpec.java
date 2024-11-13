@@ -5,14 +5,13 @@ import static helpers.utils.BaseTest.config;
 import static io.restassured.RestAssured.with;
 import static io.restassured.http.ContentType.JSON;
 
-import api.steps.Authoriz;
+import helpers.config.Authorization;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import java.io.PrintStream;
-import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.io.IoBuilder;
@@ -36,12 +35,12 @@ public class AccountAndBookSpec {
       .baseUri(config.getBaseUrl());
 
   public static RequestSpecification requestSpecWithAuthorization(String token,
-      Authoriz authToken) {
+      Authorization authToken) {
     switch (authToken) {
-      case oauth2:
+      case OAUTH_2:
         requestSpec.auth().oauth2(token);
         break;
-      case bearer:
+      case BEARER:
         requestSpec.header("Authorization", "Bearer " + token);
         break;
     }
