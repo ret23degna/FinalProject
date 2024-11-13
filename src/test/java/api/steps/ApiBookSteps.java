@@ -17,15 +17,6 @@ public class ApiBookSteps {
 
   private String newIsbn;
 
-
-  private Map<String, String> parametrMap(String[]... parametrs) {
-    Map<String, String> parametrsMap = new HashMap<>();
-    for (String[] parametr : parametrs) {
-      parametrsMap.put(parametr[0], parametr[1]);
-    }
-    return parametrsMap;
-  }
-
   @Step("Предварительные шаги. Подготовить данные для удаления всех книг")
   public void preStepSuccessfulDeleteBook() {
     preStepDeleteBooks();
@@ -41,9 +32,10 @@ public class ApiBookSteps {
 
   @Step("Предварительный шаг. Удалить все книги у пользователя")
   public void preStepDeleteBooks() {
-    String[] isbnArray = {"UserId", Singleton.getInstance().userId};
+    Map<String, String> parametrsMap = new HashMap<>();
+    parametrsMap.put("UserId", Singleton.getInstance().userId);
     new RestWrapper()
-        .delete(BOOK_STOREBOOKS_ENDPOINT, parametrMap(isbnArray), "",
+        .delete(BOOK_STOREBOOKS_ENDPOINT, parametrsMap, "",
             Singleton.getInstance().token, Authorization.BEARER);
   }
 
@@ -52,7 +44,7 @@ public class ApiBookSteps {
     BookAddPostRequestModel addBook = new BookTemplates().formAddBook(
         Singleton.getInstance().userId, Singleton.getInstance().isbnArray);
     new RestWrapper()
-        .post(BOOK_STOREBOOKS_ENDPOINT,  new HashMap<>(), addBook, Singleton.getInstance().token,
+        .post(BOOK_STOREBOOKS_ENDPOINT, addBook, Singleton.getInstance().token,
             Authorization.OAUTH_2);
   }
 
@@ -68,28 +60,30 @@ public class ApiBookSteps {
     BookAddPostRequestModel addBook = new BookTemplates().formAddBook(
         Singleton.getInstance().userId, Singleton.getInstance().isbnArray);
     return new RestWrapper()
-        .post(BOOK_STOREBOOKS_ENDPOINT,  new HashMap<>(), addBook, Singleton.getInstance().token,
+        .post(BOOK_STOREBOOKS_ENDPOINT, addBook, Singleton.getInstance().token,
             Authorization.OAUTH_2);
   }
 
   @Step("Получить список книг")
   public static RestWrapper getBooks() {
     return new RestWrapper()
-        .get(BOOK_STOREBOOKS_ENDPOINT,  new HashMap<>(), null, Authorization.UNKNOWN);
+        .get(BOOK_STOREBOOKS_ENDPOINT, new HashMap<>(), null, Authorization.UNKNOWN);
   }
 
   @Step("Получить книгу")
   public RestWrapper getBook() {
-    String[] isbnArray = {"ISBN", isbn};
+    Map<String, String> parametrsMap = new HashMap<>();
+    parametrsMap.put("ISBN", isbn);
     return new RestWrapper()
-        .get(BOOK_STOREBOOK_ENDPOINT, parametrMap(isbnArray), null, Authorization.UNKNOWN);
+        .get(BOOK_STOREBOOK_ENDPOINT, parametrsMap, null, Authorization.UNKNOWN);
   }
 
   @Step("Удалить все книги у пользователя")
   public RestWrapper deleteBooks() {
-    String[] isbnArray = {"UserId", Singleton.getInstance().userId};
+    Map<String, String> parametrsMap = new HashMap<>();
+    parametrsMap.put("UserId", Singleton.getInstance().userId);
     return new RestWrapper()
-        .delete(BOOK_STOREBOOKS_ENDPOINT, parametrMap(isbnArray), "",
+        .delete(BOOK_STOREBOOKS_ENDPOINT, parametrsMap, "",
             Singleton.getInstance().token, Authorization.BEARER);
   }
 
@@ -107,7 +101,7 @@ public class ApiBookSteps {
     BookDeleteRequestModel book = new BookTemplates().formChangeBook(newIsbn,
         Singleton.getInstance().userId);
     return new RestWrapper()
-        .put(BOOK_STOREBOOKS_ENDPOINT + "/" + isbn,  new HashMap<>(), book, Singleton.getInstance().token,
+        .put(BOOK_STOREBOOKS_ENDPOINT + "/" + isbn, book, Singleton.getInstance().token,
             Authorization.BEARER);
   }
 }

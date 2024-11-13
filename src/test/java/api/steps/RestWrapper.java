@@ -14,40 +14,40 @@ public class RestWrapper {
 
   private Response response;
 
-  public RestWrapper post(String endpoint, Map<String, String> parameter, Object body, String token,
+  public RestWrapper post(String endpoint, Object body, String token,
       Authorization authToken) {
-    this.response  = given()
+    this.response = given()
         .spec(requestSpecWithAuthorization(token, authToken))
         .body(body)
-        .queryParams(parameter)
         .post(endpoint);
     return this;
   }
 
-  public RestWrapper get(String endpoint, Map<String, String> parameter, String token, Authorization authToken) {
-    this.response  = given()
+  public RestWrapper get(String endpoint, Map<String, String> parameters, String token,
+      Authorization authToken) {
+    this.response = given()
         .spec(requestSpecWithAuthorization(token, authToken))
-        .queryParams(parameter)
+        .queryParams(parameters)
         .get(endpoint);
     return this;
   }
 
-  public RestWrapper delete(String endpoint, Map<String, String> parameter, Object body, String token,
+  public RestWrapper delete(String endpoint, Map<String, String> parameters, Object body,
+      String token,
       Authorization authToken) {
-    this.response  = given()
+    this.response = given()
         .spec(requestSpecWithAuthorization(token, authToken))
+        .queryParams(parameters)
         .body(body)
-        .queryParams(parameter)
         .delete(endpoint);
     return this;
   }
 
-  public RestWrapper put(String endpoint, Map<String, String> parameter, Object body, String token,
+  public RestWrapper put(String endpoint, Object body, String token,
       Authorization authToken) {
-    this.response  = given()
+    this.response = given()
         .spec(requestSpecWithAuthorization(token, authToken))
         .body(body)
-        .queryParams(parameter)
         .put(endpoint);
     return this;
   }
